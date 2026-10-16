@@ -1,6 +1,6 @@
 # TyHm-2
 **Grupo λ**
-- Juan Martin Zingaretii
+- Juan Martin Zingareti Matinelli
 - Joaquina Notti
 - Manuel Roby 
 - Raymundo Glasner
