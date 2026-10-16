@@ -3,7 +3,7 @@
 - Juan Martin Zingareti Matinelli
 - Joaquina Notti
 - Manuel Roby 
-- Raymundo Glasner
+- Raimundo Glasner
 - Juan Cruz Solchaga
 - Juan Mateo Hidalgo
 - Nicolas Sarmiento Lugones
