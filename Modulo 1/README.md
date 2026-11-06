@@ -22,4 +22,4 @@ Antes de construir el prototipo de SatellAgro había que decidir **con qué tecn
 Sentinel-2 gana en cinco de los seis análisis de sensibilidad. Sólo pierde si lo más importante fuera anticiparse al cierre de estomas, y por eso el térmico queda como **evolución futura**. Límite asumido: SatellAgro dice **dónde ir a mirar**, no cuánto regar.
 
 # Descarga del informe
-[Descargá aquí el informe en PDF](M1%20-%20TyHMII%20-%20Seleccion%20del%20enfoque%20tecnologico%20-%20SatellAgro.pdf)
+[Descargá aquí el informe en PDF](https://raw.githubusercontent.com/juan-zingaretti/TyHm-2/main/Modulo%201/M1%20-%20TyHMII%20-%20Seleccion%20del%20enfoque%20tecnologico%20-%20SatellAgro.pdf)

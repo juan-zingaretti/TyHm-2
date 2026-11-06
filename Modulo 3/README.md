@@ -13,4 +13,4 @@ Aplicamos la fotografía como **prueba documental** a las "fotos" que usa Satell
 * `codigo/analisis_pericial.py`: genera todas las láminas a partir de los recortes Sentinel-2.
 
 ## 📥 Descargas
-[Descargá aquí el informe en PDF](M3%20-%20TyHMII%20-%20Analisis%20pericial%20de%20imagen%20satelital.pdf)
+[Descargá aquí el informe en PDF](https://raw.githubusercontent.com/juan-zingaretti/TyHm-2/main/Modulo%203/M3%20-%20TyHMII%20-%20Analisis%20pericial%20de%20imagen%20satelital.pdf)

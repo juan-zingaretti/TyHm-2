@@ -17,9 +17,9 @@ Más esfuerzo sin calibrar trae más suscriptos (110) pero peor resultado (−3.
 ## 📥 Descargas
 [Ver el informe del Módulo 5 en formato web](https://juan-zingaretti.github.io/TyHm-2/Modulo%205/Informe_M5.html)
 
-[Descargá aquí el informe en PDF](M5%20-%20TyHMII%20-%20Dinamica%20de%20sistemas%20-%20Difusion%20de%20SatellAgro.pdf)
+[Descargá aquí el informe en PDF](https://raw.githubusercontent.com/juan-zingaretti/TyHm-2/main/Modulo%205/M5%20-%20TyHMII%20-%20Dinamica%20de%20sistemas%20-%20Difusion%20de%20SatellAgro.pdf)
 
-[Descargá aquí el modelo de Vensim (.mdl)](marketing_guerrilla.mdl) · [Variante con STEP (.mdl)](marketing_guerrilla_STEP.mdl)
+[Descargá aquí el modelo de Vensim (.mdl)](https://raw.githubusercontent.com/juan-zingaretti/TyHm-2/main/Modulo%205/marketing_guerrilla.mdl) · [Variante con STEP (.mdl)](https://raw.githubusercontent.com/juan-zingaretti/TyHm-2/main/Modulo%205/marketing_guerrilla_STEP.mdl)
 
 ## Reproducir en Python
 ```bash

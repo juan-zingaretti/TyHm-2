@@ -15,4 +15,4 @@ Como aplicación práctica redactamos el **Plan del piloto SatellAgro · Tempora
 * Anexo con el método de trabajo con la IA y lo que no delegamos.
 
 ## 📥 Descargas
-[Descargá aquí el informe en PDF](M2%20-%20TyHMII%20-%20Plan%20del%20piloto%20SatellAgro%202026-27.pdf)
+[Descargá aquí el informe en PDF](https://raw.githubusercontent.com/juan-zingaretti/TyHm-2/main/Modulo%202/M2%20-%20TyHMII%20-%20Plan%20del%20piloto%20SatellAgro%202026-27.pdf)

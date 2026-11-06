@@ -30,4 +30,4 @@ Construimos el SIG de la zona piloto de SatellAgro: **Agrelo, Luján de Cuyo** (
 * `codigo/`: `01` descarga Sentinel-2, `02` descarga OSM, `03` procesamiento SIG, `04` mapas web, `05` lámina estática.
 
 ## 📥 Descargas
-[Descargá aquí el informe en PDF](M4%20-%20TyHMII%20-%20SIG%20de%20la%20zona%20piloto%20Agrelo.pdf)
+[Descargá aquí el informe en PDF](https://raw.githubusercontent.com/juan-zingaretti/TyHm-2/main/Modulo%204/M4%20-%20TyHMII%20-%20SIG%20de%20la%20zona%20piloto%20Agrelo.pdf)
