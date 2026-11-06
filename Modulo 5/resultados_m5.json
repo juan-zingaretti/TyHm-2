@@ -1,0 +1,325 @@
+{
+ "escenarios": {
+  "Guerrilla calibrada (10 % falsas alarmas)": {
+   "cauces_t1": 1.4,
+   "altas_t1": 8.0,
+   "suscriptos_t2": 82.0,
+   "retencion": 0.9,
+   "reputacion": 0.77,
+   "resultado_usd": -1649.0,
+   "casos": 7.7,
+   "costo_por_alta": 94.0
+  },
+  "Guerrilla sin calibrar (30 %)": {
+   "cauces_t1": 1.3,
+   "altas_t1": 7.0,
+   "suscriptos_t2": 43.0,
+   "retencion": 0.84,
+   "reputacion": 0.54,
+   "resultado_usd": -3455.0,
+   "casos": 3.4,
+   "costo_por_alta": 146.0
+  },
+  "Zumbido: alerta en cada imagen": {
+   "cauces_t1": 1.4,
+   "altas_t1": 8.0,
+   "suscriptos_t2": 46.0,
+   "retencion": 0.58,
+   "reputacion": 0.7,
+   "resultado_usd": -3855.0,
+   "casos": 4.4,
+   "costo_por_alta": 102.0
+  },
+  "Contacto en frío": {
+   "cauces_t1": 1.0,
+   "altas_t1": 2.0,
+   "suscriptos_t2": 14.0,
+   "retencion": 0.88,
+   "reputacion": 0.41,
+   "resultado_usd": -4396.0,
+   "casos": 1.4,
+   "costo_por_alta": 362.0
+  },
+  "1 reunión por semana, calibrada": {
+   "cauces_t1": 5.3,
+   "altas_t1": 30.0,
+   "suscriptos_t2": 181.0,
+   "retencion": 0.87,
+   "reputacion": 0.83,
+   "resultado_usd": 2433.0,
+   "casos": 17.8,
+   "costo_por_alta": 75.0
+  }
+ },
+ "presentacion": {
+  "Guerrilla calibrada (10 % falsas alarmas)": [
+   1.4,
+   8,
+   82,
+   0.9,
+   0.77,
+   -1649
+  ],
+  "Guerrilla sin calibrar (30 %)": [
+   1.3,
+   7,
+   43,
+   0.84,
+   0.54,
+   -3455
+  ],
+  "Zumbido: alerta en cada imagen": [
+   1.4,
+   8,
+   46,
+   0.58,
+   0.7,
+   -3855
+  ],
+  "Contacto en frío": [
+   1.0,
+   2,
+   14,
+   0.88,
+   0.41,
+   -4396
+  ],
+  "1 reunión por semana, calibrada": [
+   5.3,
+   30,
+   181,
+   0.87,
+   0.83,
+   2433
+  ]
+ },
+ "step": {
+  "Original (0,25 reuniones/sem · 30 % FA)": {
+   "cauces_t1": 1.3,
+   "altas_t1": 7.0,
+   "suscriptos_t2": 43.0,
+   "retencion": 0.84,
+   "reputacion": 0.54,
+   "resultado_usd": -3455.0,
+   "casos": 3.4,
+   "costo_por_alta": 146.0
+  },
+  "STEP reuniones: 0,25 → 1 en semana 4": {
+   "cauces_t1": 4.4,
+   "altas_t1": 17.0,
+   "suscriptos_t2": 110.0,
+   "retencion": 0.84,
+   "reputacion": 0.62,
+   "resultado_usd": -3912.0,
+   "casos": 8.2,
+   "costo_por_alta": 109.0
+  },
+  "STEP calibración: FA 30 % → 10 % en semana 22": {
+   "cauces_t1": 1.3,
+   "altas_t1": 7.0,
+   "suscriptos_t2": 79.0,
+   "retencion": 0.9,
+   "reputacion": 0.76,
+   "resultado_usd": -1826.0,
+   "casos": 7.3,
+   "costo_por_alta": 96.0
+  },
+  "Ambos escalones": {
+   "cauces_t1": 4.4,
+   "altas_t1": 17.0,
+   "suscriptos_t2": 155.0,
+   "retencion": 0.89,
+   "reputacion": 0.8,
+   "resultado_usd": -258.0,
+   "casos": 14.4,
+   "costo_por_alta": 83.0
+  }
+ },
+ "sensibilidad": {
+  "reuniones": [
+   0.25,
+   0.5,
+   0.75,
+   1.0,
+   1.25,
+   1.5
+  ],
+  "falsas_alarmas": [
+   0.0,
+   0.05,
+   0.1,
+   0.15,
+   0.2,
+   0.25,
+   0.3,
+   0.35,
+   0.4
+  ],
+  "suscriptos": [
+   [
+    111.0,
+    169.0,
+    194.0,
+    217.0,
+    238.0,
+    259.0
+   ],
+   [
+    96.0,
+    156.0,
+    178.0,
+    198.0,
+    217.0,
+    236.0
+   ],
+   [
+    82.0,
+    143.0,
+    163.0,
+    181.0,
+    198.0,
+    214.0
+   ],
+   [
+    70.0,
+    130.0,
+    149.0,
+    165.0,
+    179.0,
+    193.0
+   ],
+   [
+    60.0,
+    117.0,
+    135.0,
+    149.0,
+    162.0,
+    174.0
+   ],
+   [
+    51.0,
+    103.0,
+    122.0,
+    134.0,
+    145.0,
+    156.0
+   ],
+   [
+    43.0,
+    88.0,
+    109.0,
+    120.0,
+    130.0,
+    139.0
+   ],
+   [
+    36.0,
+    72.0,
+    96.0,
+    106.0,
+    115.0,
+    123.0
+   ],
+   [
+    31.0,
+    57.0,
+    83.0,
+    94.0,
+    101.0,
+    108.0
+   ]
+  ],
+  "resultado_usd": [
+   [
+    -155.0,
+    2354.0,
+    4151.0,
+    5754.0,
+    7299.0,
+    8773.0
+   ],
+   [
+    -961.0,
+    1224.0,
+    2733.0,
+    4042.0,
+    5279.0,
+    6475.0
+   ],
+   [
+    -1649.0,
+    151.0,
+    1394.0,
+    2433.0,
+    3392.0,
+    4326.0
+   ],
+   [
+    -2230.0,
+    -817.0,
+    126.0,
+    919.0,
+    1631.0,
+    2304.0
+   ],
+   [
+    -2717.0,
+    -1672.0,
+    -1073.0,
+    -500.0,
+    -10.0,
+    436.0
+   ],
+   [
+    -3121.0,
+    -2492.0,
+    -2204.0,
+    -1829.0,
+    -1540.0,
+    -1293.0
+   ],
+   [
+    -3455.0,
+    -3278.0,
+    -3262.0,
+    -3072.0,
+    -2962.0,
+    -2893.0
+   ],
+   [
+    -3727.0,
+    -3991.0,
+    -4157.0,
+    -4232.0,
+    -4280.0,
+    -4371.0
+   ],
+   [
+    -3946.0,
+    -4549.0,
+    -4920.0,
+    -5310.0,
+    -5500.0,
+    -5729.0
+   ]
+  ]
+ },
+ "equilibrio": {
+  "0%": 0.5,
+  "5%": 0.5,
+  "10%": 0.5,
+  "15%": 0.75,
+  "20%": 1.5,
+  "25%": null,
+  "30%": null,
+  "35%": null,
+  "40%": null
+ },
+ "precio": {
+  "75": -5109,
+  "100": -3955,
+  "150": -1649,
+  "200": 658,
+  "250": 2965
+ }
+}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M5 · Dinámica de sistemas · SatellAgro</title><style>
+/* Estilo común de los informes de SatellAgro · Grupo λ · TyHM II 2026 */
+@page { size: A4; margin: 18mm 17mm 18mm 17mm; }
+:root { --verde: #1f3a2b; --verde2: #3a7d44; --gris: #5b6770; --borde: #d9dee2; --fondo: #f5f7f6; --acento: #c9822b; }
+* { box-sizing: border-box; }
+body { font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; color: #1d2327; font-size: 10.5pt; line-height: 1.5; margin: 0; background: #fff; }
+.wrap { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+@media print { .wrap { max-width: none; padding: 0; } }
+.portada { border-left: 6px solid var(--verde2); padding: 10px 0 10px 18px; margin: 10px 0 26px; }
+.portada .kicker { text-transform: uppercase; letter-spacing: .08em; font-size: 9pt; color: var(--acento); font-weight: 600; }
+.portada h1 { font-size: 22pt; line-height: 1.15; margin: 6px 0 8px; color: var(--verde); }
+.portada .sub { font-size: 12pt; color: var(--gris); margin: 0 0 14px; }
+.portada table { font-size: 9.5pt; border: none; margin: 0; }
+.portada td { border: none; padding: 1px 14px 1px 0; vertical-align: top; }
+h2 { font-size: 14.5pt; color: var(--verde); margin: 26px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--borde); break-after: avoid; }
+h3 { font-size: 11.5pt; color: var(--verde2); margin: 18px 0 6px; break-after: avoid; }
+p { margin: 6px 0 9px; } ul, ol { margin: 6px 0 10px; padding-left: 22px; } li { margin: 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0 14px; font-size: 9.5pt; }
+tr { break-inside: avoid; }
+th, td { border: 1px solid var(--borde); padding: 5px 7px; text-align: left; vertical-align: top; }
+th { background: var(--fondo); font-weight: 600; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+tr.destacado td { background: #eaf4ec; font-weight: 600; }
+figure { margin: 12px 0 16px; break-inside: avoid; text-align: center; }
+figure img { max-width: 100%; border: 1px solid var(--borde); border-radius: 4px; }
+figcaption { font-size: 9pt; color: var(--gris); margin-top: 5px; text-align: left; }
+.caja { background: var(--fondo); border: 1px solid var(--borde); border-left: 4px solid var(--verde2); padding: 10px 14px; margin: 12px 0; border-radius: 3px; break-inside: avoid; }
+.caja.aviso { border-left-color: var(--acento); }
+.caja p:first-child { margin-top: 0; } .caja p:last-child { margin-bottom: 0; }
+.kpis { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.kpi { flex: 1 1 140px; border: 1px solid var(--borde); border-radius: 4px; padding: 8px 10px; break-inside: avoid; }
+.kpi b { display: block; font-size: 16pt; color: var(--verde); line-height: 1.2; }
+.kpi span { font-size: 8.5pt; color: var(--gris); }
+code { font-family: Consolas, "Courier New", monospace; font-size: 9pt; background: var(--fondo); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.mono { font-family: Consolas, monospace; font-size: 8.5pt; word-break: break-all; }
+.pie { margin-top: 30px; padding-top: 8px; border-top: 1px solid var(--borde); font-size: 8.5pt; color: var(--gris); }
+.salto { break-before: page; }
+a { color: var(--verde2); }
+
+</style></head>
+<body><div class="wrap">
+
+<div class="portada">
+  <div class="kicker">Técnicas y Herramientas Modernas II · Módulo 5 · Dinámica de sistemas</div>
+  <h1>Cómo se difunde SatellAgro por los cauces de riego: modelo, validación y pruebas STEP</h1>
+  <p class="sub">Modelo Vensim de stocks y flujos del mercado, replicado en Python para escenarios y sensibilidad</p>
+  <table>
+    <tr><td><b>Grupo</b></td><td>Grupo λ (Grupo 2) · Ingeniería Industrial · UNCuyo · noviembre de 2026</td></tr>
+    <tr><td><b>Integrantes</b></td><td>Juan Martín Zingaretti Martinelli (14634) · Nicolás Sarmiento Lugones (14747) · Raimundo Glasner (14745) · Joaquina Notti (14613) · Manuel Roby (14914) · Juan Cruz Solchaga (14813) · Juan Mateo Hidalgo (14826)</td></tr>
+    <tr><td><b>Archivos</b></td><td><code>marketing_guerrilla.mdl</code> · <code>marketing_guerrilla_STEP.mdl</code> · <code>simulacion/*.py</code></td></tr>
+  </table>
+</div>
+
+<h2>1. Planteo del problema</h2>
+<p>SatellAgro no se vende con publicidad: llega a los regantes <b>cauce por cauce</b>, a través del inspector de cada Inspección de Cauce, con un reporte gratis que "pica" y deja "roncha" (marketing de guerrilla). Queríamos saber qué táctica comercial hace crecer la base de suscriptos sin destruir la reputación del servicio, y cuál es el cuello de botella. Es un problema típico de dinámica de sistemas: hay acumulaciones (stocks), demoras y realimentaciones que hacen que la intuición falle.</p>
+<p>Horizonte: <b>78 semanas</b>, del 1/11/2026 a fines de abril de 2028 (dos temporadas de vid). Paso de integración: 0,25 semanas (Euler).</p>
+
+<h2>2. Estructura del modelo</h2>
+<h3>Stocks principales</h3>
+<ul>
+  <li><b>Cauces sin contactar → Cauces aliados</b>: los abre el flujo "Apertura de cauces", que depende de las reuniones con inspectores, de la probabilidad de acuerdo, de los casos de éxito y de la reputación.</li>
+  <li><b>Embudo del regante:</b> Sin conocer → Conocen sin pedir → Con reporte → Suscriptos → Abandonaron. Una parte de los que reciben el reporte lo descarta y otra vuelve a evaluar más adelante.</li>
+  <li><b>Reputación</b> (0–1): se ajusta con una demora de 6 semanas hacia una reputación objetivo.</li>
+  <li><b>Casos de éxito publicados</b>: se suman al cierre de cada temporada.</li>
+  <li><b>Ingresos y costos acumulados</b>.</li>
+</ul>
+
+<h3>Bucles de realimentación</h3>
+<table>
+  <tr><th>Bucle</th><th>Tipo</th><th>Mecanismo</th></tr>
+  <tr><td>Boca a boca</td><td>Refuerzo (+)</td><td>Más suscriptos → más vecinos convencidos → más regantes que conocen el servicio. Los que abandonaron pesan 1,5 veces en contra.</td></tr>
+  <tr><td>Casos de éxito</td><td>Refuerzo (+)</td><td>Más suscriptos → más casos al cierre → más chance de acuerdo con nuevos inspectores y mejor reputación.</td></tr>
+  <tr><td>Falsas alarmas</td><td>Balance (−)</td><td>Más suscriptos expuestos a alertas falsas → baja la reputación → bajan los pedidos y la "roncha".</td></tr>
+  <tr><td>Zumbido</td><td>Balance (−)</td><td>Más alertas por semana que la tolerancia → más abandono.</td></tr>
+  <tr><td>Agotamiento del mercado</td><td>Balance (−)</td><td>Los regantes sin conocer se agotan dentro de cada cauce aliado.</td></tr>
+</table>
+<p>La <b>ventana estacional</b> (tabla de búsqueda) multiplica casi todas las tasas: vale 1 entre diciembre y febrero (calor y envero, el "atardecer" del mosquito) y 0,1 en invierno.</p>
+
+<h3>Supuestos principales</h3>
+<p>40 cauces vitícolas en la zona; 120 regantes por cauce, el 60 % con vid; precio de USD 150 por temporada, con la primera temporada gratis; capacidad de 15 reportes por semana; USD 15 por reporte explicado, USD 40 por reunión y USD 50 de costo fijo semanal. Son supuestos a verificar con el DGI y el padrón de un cauce real. El modelo sirve para <b>comparar tácticas entre sí</b>, no para pronosticar ventas.</p>
+
+<h2>3. Validación de la réplica</h2>
+<p>Para poder correr muchos escenarios sin depender de la licencia de Vensim, reescribimos el modelo en Python ecuación por ecuación, con el mismo integrador de Euler, el mismo paso y las mismas funciones (PULSE, WITH LOOKUP, XIDZ). Después comparamos con los resultados de Vensim presentados por el equipo:</p>
+<table>
+  <tr><th>Escenario</th><th class="n">T1: cauces / altas</th><th class="n">T2: suscriptos</th><th class="n">Retención</th><th class="n">Reputación</th><th class="n">Resultado USD</th></tr>
+  <tr><td>Guerrilla calibrada (10 % FA)</td><td class="n">1,4 / 8</td><td class="n">82</td><td class="n">90 %</td><td class="n">0,77</td><td class="n">−1.649</td></tr>
+  <tr><td>Guerrilla sin calibrar (30 % FA)</td><td class="n">1,3 / 7</td><td class="n">43</td><td class="n">84 %</td><td class="n">0,54</td><td class="n">−3.455</td></tr>
+  <tr><td>Zumbido: alerta en cada imagen</td><td class="n">1,4 / 8</td><td class="n">46</td><td class="n">58 %</td><td class="n">0,70</td><td class="n">−3.855</td></tr>
+  <tr><td>Contacto en frío</td><td class="n">1,0 / 2</td><td class="n">14</td><td class="n">88 %</td><td class="n">0,41</td><td class="n">−4.396</td></tr>
+  <tr class="destacado"><td>1 reunión por semana, calibrada</td><td class="n">5,3 / 30</td><td class="n">181</td><td class="n">87 %</td><td class="n">0,83</td><td class="n">+2.433</td></tr>
+</table>
+<div class="caja"><p><b>La réplica coincide exactamente con Vensim en los 30 valores de la tabla.</b> T1 se mide al cierre de la primera temporada (semana 22, fin de marzo de 2027) y el resto en la semana 78. Con la réplica validada, los análisis siguientes son confiables.</p></div>
+
+<figure><img src="figuras/01_cinco_tacticas.png" alt="Cinco tácticas"><figcaption>Figura 1. Suscriptos, reputación y resultado acumulado de las cinco tácticas. Franjas naranjas: temporadas de diciembre a marzo.</figcaption></figure>
+
+<figure><img src="figuras/02_embudo.png" alt="Embudo"><figcaption>Figura 2. Embudo del regante en el escenario de guerrilla calibrada. La primera temporada es chica porque el primer cauce llega tarde. El salto ocurre en la segunda, empujado por los casos de éxito.</figcaption></figure>
+
+<h2 class="salto">4. Pruebas con la función STEP</h2>
+<p>Para estudiar la respuesta del sistema a un cambio brusco de política creamos <code>marketing_guerrilla_STEP.mdl</code>. Agrega dos escalones con la función <code>STEP(altura, semana)</code> de Vensim, que se pueden apagar poniendo su altura en 0:</p>
+<ul>
+  <li><b>Escalón de esfuerzo de campo:</b> <code>Reuniones = 0,25 + STEP(0,75; 4)</code>. En la semana 4 (principios de diciembre de 2026) el equipo pasa de una reunión cada cuatro semanas a una por semana.</li>
+  <li><b>Escalón de calibración:</b> <code>Falsas alarmas = 0,30 − STEP(0,20; 22)</code>. Al cierre de la primera temporada, la calibración en campo baja las falsas alarmas del 30 % al 10 %.</li>
+</ul>
+<figure><img src="figuras/03_pruebas_step.png" alt="Pruebas STEP"><figcaption>Figura 3. Respuesta a los escalones: entrada (reuniones), cauces aliados, suscriptos y reputación.</figcaption></figure>
+<table>
+  <tr><th>Prueba</th><th class="n">T1: cauces / altas</th><th class="n">T2: suscriptos</th><th class="n">Reputación</th><th class="n">Resultado USD</th></tr>
+  <tr><td>Original (0,25 reuniones/sem · 30 % FA)</td><td class="n">1,3 / 7</td><td class="n">43</td><td class="n">0,54</td><td class="n">−3.455</td></tr>
+  <tr><td>STEP de reuniones en semana 4</td><td class="n">4,4 / 17</td><td class="n">110</td><td class="n">0,62</td><td class="n">−3.912</td></tr>
+  <tr><td>STEP de calibración en semana 22</td><td class="n">1,3 / 7</td><td class="n">79</td><td class="n">0,76</td><td class="n">−1.826</td></tr>
+  <tr class="destacado"><td>Ambos escalones</td><td class="n">4,4 / 17</td><td class="n">155</td><td class="n">0,80</td><td class="n">−258</td></tr>
+</table>
+<h3>Comportamiento observado</h3>
+<ul>
+  <li><b>Más esfuerzo sin calibrar no alcanza.</b> El escalón de reuniones casi triplica los cauces aliados y llega a 110 suscriptos, pero el resultado empeora (−3.912 USD). Las reuniones cuestan, y con 30 % de falsas alarmas la reputación cae a ~0,52 durante la primera temporada y los nuevos suscriptos abandonan.</li>
+  <li><b>La reputación responde con demora.</b> Después del escalón de calibración, la reputación no salta: sube en forma exponencial (tiempo de formación de 6 semanas) desde 0,60 hasta ~0,66. Vuelve a subir con los casos del segundo cierre.</li>
+  <li><b>Calibrar tarde casi no cuesta.</b> Calibrar al cierre de la primera temporada da 79 suscriptos, contra 82 si se calibra desde el inicio. La primera temporada es chica de todos modos, así que es el momento de aprender.</li>
+  <li><b>Los escalones se potencian.</b> Juntos dan 155 suscriptos y un resultado casi en equilibrio (−258 USD). El efecto combinado es mayor que la suma de los efectos separados: es la firma de los bucles de refuerzo (casos de éxito y boca a boca).</li>
+</ul>
+
+<h2>5. Sensibilidad: esfuerzo de campo × falsas alarmas</h2>
+<figure><img src="figuras/04_sensibilidad.png" alt="Sensibilidad"><figcaption>Figura 4. Suscriptos y resultado acumulado al final del horizonte para 54 combinaciones de reuniones por semana (0,25 a 1,5) y fracción de falsas alarmas (0 a 40 %).</figcaption></figure>
+<table>
+  <tr><th>Fracción de falsas alarmas</th><th>0–10 %</th><th>15 %</th><th>20 %</th><th>25 % o más</th></tr>
+  <tr><td>Reuniones por semana mínimas para no perder plata en dos temporadas</td><td>0,5</td><td>0,75</td><td>1,5</td><td>Ninguna en el rango probado</td></tr>
+</table>
+<p>Con 25 % o más de falsas alarmas no hay esfuerzo de campo que salve el negocio en dos temporadas. La calidad de la señal es una <b>condición necesaria</b>, no un detalle técnico.</p>
+<h3>Precio</h3>
+<table>
+  <tr><th>Precio por temporada (USD)</th><td class="n">75</td><td class="n">100</td><td class="n">150</td><td class="n">200</td><td class="n">250</td></tr>
+  <tr><th>Resultado a abr-2028 (guerrilla calibrada, 0,25 reuniones/sem)</th><td class="n">−5.109</td><td class="n">−3.955</td><td class="n">−1.649</td><td class="n">+658</td><td class="n">+2.965</td></tr>
+</table>
+<p>Con el esfuerzo mínimo, el equilibrio en dos temporadas exige un precio cercano a USD 185 (interpolando entre 150 y 200). Duplicar o cuadruplicar las reuniones es más efectivo que subir el precio, porque además hace crecer la base de suscriptos.</p>
+
+<h2>6. Conclusiones para la estrategia</h2>
+<ol>
+  <li><b>Calibrar antes de escalar.</b> Bajar las falsas alarmas al 10 % o menos es la palanca de mayor impacto y la condición para que el resto funcione.</li>
+  <li><b>El cuello de botella son las reuniones con inspectores</b>, no la capacidad de hacer reportes: el pico de pedidos fue de ~12 por semana, contra una capacidad de 15.</li>
+  <li><b>No zumbar:</b> avisar en cada imagen baja la retención del 90 % al 58 %. SatellAgro avisa sólo cuando cambia el estado.</li>
+  <li><b>El contacto en frío es la peor táctica:</b> llega a más gente, pero casi nadie pide el reporte y la reputación cae a 0,41.</li>
+  <li><b>Plan recomendado:</b> calibrar en la primera temporada con las fincas piloto y concentrar el esfuerzo de campo (≥ 0,5 reuniones por semana) a partir de la segunda.</li>
+</ol>
+
+<h2>Anexo · Cómo reproducir</h2>
+<ul>
+  <li><b>Vensim:</b> abrir <code>marketing_guerrilla.mdl</code> (modelo base) o <code>marketing_guerrilla_STEP.mdl</code> (con escalones) y simular. Para volver al modelo base desde la variante STEP, poner en 0 "Aumento de reuniones" y "Mejora por calibración".</li>
+  <li><b>Python:</b> <code>python simulacion/modelo_guerrilla.py</code> imprime los cinco escenarios; <code>python simulacion/analisis_m5.py figuras</code> regenera todos los gráficos y <code>resultados_m5.json</code>.</li>
+</ul>
+
+<div class="pie">SatellAgro · Grupo λ (Grupo 2) · TyHM II 2026 · Modelo de dinámica de sistemas desarrollado por el equipo en Vensim; réplica, pruebas STEP, sensibilidad e informe con asistencia de IA (Claude), revisados por el equipo.</div>
+</div></body></html>

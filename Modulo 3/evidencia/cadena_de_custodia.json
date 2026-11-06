@@ -1,0 +1,91 @@
+{
+ "herramienta": "pystac-client + rasterio (lectura por ventana de COG en AWS)",
+ "catalogo": "https://earth-search.aws.element84.com/v1",
+ "coleccion": "sentinel-2-l2a",
+ "imagenes": {
+  "20261031": {
+   "id": "S2B_19HED_20261031_0_L2A",
+   "fecha_hora_utc": "2026-10-31T14:42:02.570000Z",
+   "plataforma": "sentinel-2b",
+   "baseline": "05.13",
+   "producto": "S2B_MSIL2A_20261031T142719_N0513_R053_T19HED_20261031T175910.SAFE",
+   "archivos": {
+    "red": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/10/S2B_19HED_20261031_0_L2A/B04.tif",
+     "sha256": "074d7e8430f2ad8678da7d9cade9d583387aa6e021e431fb1423ce7e8b5de08b",
+     "archivo": "20261031_red.tif"
+    },
+    "nir": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/10/S2B_19HED_20261031_0_L2A/B08.tif",
+     "sha256": "eb89571079fbc3979cf051b9d13cf37966d1640110e1fc1b57394ad1021d55fb",
+     "archivo": "20261031_nir.tif"
+    },
+    "nir08": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/10/S2B_19HED_20261031_0_L2A/B8A.tif",
+     "sha256": "a99cd486864dff7c7c972c2e7153ad16859bb3988184ea1df6f673fe9ed6beab",
+     "archivo": "20261031_nir08.tif"
+    },
+    "swir16": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/10/S2B_19HED_20261031_0_L2A/B11.tif",
+     "sha256": "561bef4371e65e9de501e37ccde24ee4673472da59c51d780036e0ef056f33db",
+     "archivo": "20261031_swir16.tif"
+    },
+    "scl": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/10/S2B_19HED_20261031_0_L2A/SCL.tif",
+     "sha256": "fb8150a7f673b27bcbab24c08a894fd3d331b850938bbd90f5b0c3bbd53f2ef0",
+     "archivo": "20261031_scl.tif"
+    },
+    "visual": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/10/S2B_19HED_20261031_0_L2A/TCI.tif",
+     "sha256": "706d37c95f78713ac4a48cc65d364e22008ef6b1da5acf53388a993ed5119c30",
+     "archivo": "20261031_visual.tif"
+    }
+   }
+  },
+  "20261105": {
+   "id": "S2C_19HED_20261105_0_L2A",
+   "fecha_hora_utc": "2026-11-05T14:41:56.854000Z",
+   "plataforma": "sentinel-2c",
+   "baseline": "05.13",
+   "producto": "S2C_MSIL2A_20261105T142751_N0513_R053_T19HED_20261105T190403.SAFE",
+   "archivos": {
+    "red": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/11/S2C_19HED_20261105_0_L2A/B04.tif",
+     "sha256": "f8a7ebf32b7e537cc458fc8377dfed49af9494e35cab234b108c4f9641dfda41",
+     "archivo": "20261105_red.tif"
+    },
+    "nir": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/11/S2C_19HED_20261105_0_L2A/B08.tif",
+     "sha256": "866a4faa67b1bc58685debcc5088005545a0e04ad64a668d1b1a401dd6fb9096",
+     "archivo": "20261105_nir.tif"
+    },
+    "nir08": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/11/S2C_19HED_20261105_0_L2A/B8A.tif",
+     "sha256": "acc4bd83b92cfd7b02b398a81883fc73106fd3cecfb0ac6a9925b87dc9e04d35",
+     "archivo": "20261105_nir08.tif"
+    },
+    "swir16": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/11/S2C_19HED_20261105_0_L2A/B11.tif",
+     "sha256": "db1dbbb331f020c952cd54a9ddc353255f93bb027e40eebb7b375ef2faab3566",
+     "archivo": "20261105_swir16.tif"
+    },
+    "scl": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/11/S2C_19HED_20261105_0_L2A/SCL.tif",
+     "sha256": "11a6a0a34e92da0f2f590d04d31f2ff6e0e506d0aee9ae0c24ddf48108808739",
+     "archivo": "20261105_scl.tif"
+    },
+    "visual": {
+     "origen": "https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/11/S2C_19HED_20261105_0_L2A/TCI.tif",
+     "sha256": "c9222648e237b97d6d2a972d98ef4241220caced6983eccbe9dc413ac19a28e2",
+     "archivo": "20261105_visual.tif"
+    }
+   }
+  }
+ },
+ "laminas_sha256": {
+  "01_escena_color_real.png": "3dd9c11aeee9d1b53b46074bebd86fec2deb585a820173b91bbb09951e13ae84",
+  "02_composiciones.png": "98ce011f3f93af0c73bc5a1fdac9fef852a2a4ff3dfe6a15a1e4afe04064e3ab",
+  "03_caso_antes_despues.png": "ec44375b6939499b9a6afcb177b1f24d1c917f8f0308fa65f5945a723e198d68",
+  "04_exposicion_y_scl.png": "811a1e4dc166ece2c9645e8c7c3f9121af93985c6c67d1ceeb039333c0ec0149"
+ }
+}

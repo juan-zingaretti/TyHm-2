@@ -1,0 +1,137 @@
+{
+ "validez_scl": {
+  "20241105": 0.9992,
+  "20260104": 0.9991,
+  "20260926": 0.9952,
+  "20261006": 0.9717,
+  "20261031": 0.9967,
+  "20261105": 0.9987
+ },
+ "vinedos": {
+  "n": 81,
+  "area_total_ha": 3181.0,
+  "estados": {
+   "Sin señales de estrés": 71,
+   "No evaluable aún": 10
+  },
+  "area_por_estado_ha": {
+   "No evaluable aún": 519.3,
+   "Sin señales de estrés": 2661.7
+  }
+ },
+ "serie_media_vinedos": {
+  "20241105": {
+   "ndvi": 0.359,
+   "ndmi": 0.085
+  },
+  "20260104": {
+   "ndvi": 0.372,
+   "ndmi": 0.098
+  },
+  "20260926": {
+   "ndvi": 0.185,
+   "ndmi": -0.069
+  },
+  "20261006": {
+   "ndvi": 0.195,
+   "ndmi": -0.053
+  },
+  "20261031": {
+   "ndvi": 0.289,
+   "ndmi": 0.007
+  },
+  "20261105": {
+   "ndvi": 0.32,
+   "ndmi": 0.032
+  }
+ },
+ "vegetacion_vigorosa": {
+  "20241105": {
+   "vigorosa_ndvi_gt_0.4_ha": 1874.6,
+   "suelo_o_rala_ndvi_lt_0.2_ha": 1445.4,
+   "ndvi_medio": 0.314,
+   "vigorosa_en_vinedos_osm_ha": 1151.2
+  },
+  "20260104": {
+   "vigorosa_ndvi_gt_0.4_ha": 1655.8,
+   "suelo_o_rala_ndvi_lt_0.2_ha": 3744.1,
+   "ndvi_medio": 0.267,
+   "vigorosa_en_vinedos_osm_ha": 1272.6
+  },
+  "20261105": {
+   "vigorosa_ndvi_gt_0.4_ha": 1642.0,
+   "suelo_o_rala_ndvi_lt_0.2_ha": 1801.8,
+   "ndvi_medio": 0.301,
+   "vigorosa_en_vinedos_osm_ha": 810.2
+  }
+ },
+ "area_recorte_ha": 8293.9,
+ "voronoi": [
+  {
+   "bodega": "Belasco de Baquedano",
+   "area_celda_ha": 4191.3,
+   "vinedo_osm_ha": 1666.6
+  },
+  {
+   "bodega": "Bodega Melipal",
+   "area_celda_ha": 824.3,
+   "vinedo_osm_ha": 366.8
+  },
+  {
+   "bodega": "Bodega Séptima",
+   "area_celda_ha": 445.2,
+   "vinedo_osm_ha": 252.3
+  },
+  {
+   "bodega": "Bodega Sottano",
+   "area_celda_ha": 315.0,
+   "vinedo_osm_ha": 228.8
+  },
+  {
+   "bodega": "Terrazas de los Andes",
+   "area_celda_ha": 240.3,
+   "vinedo_osm_ha": 196.4
+  },
+  {
+   "bodega": "Viña Cobos",
+   "area_celda_ha": 347.7,
+   "vinedo_osm_ha": 147.2
+  },
+  {
+   "bodega": "Bodega Favre",
+   "area_celda_ha": 1390.5,
+   "vinedo_osm_ha": 136.8
+  },
+  {
+   "bodega": "Bodega Ruca Malen",
+   "area_celda_ha": 289.4,
+   "vinedo_osm_ha": 102.4
+  },
+  {
+   "bodega": "Bodega Norton",
+   "area_celda_ha": 230.1,
+   "vinedo_osm_ha": 83.2
+  }
+ ],
+ "delaunay_largo_medio_km": 2.24,
+ "canales": [
+  {
+   "canal": "(sin nombre)",
+   "largo_km": 13.99,
+   "area_ha": 756.5,
+   "vinedo_osm_ha": 401.9
+  },
+  {
+   "canal": "Canal Corvalán",
+   "largo_km": 4.57,
+   "area_ha": 288.3,
+   "vinedo_osm_ha": 217.5
+  },
+  {
+   "canal": "Canal Flores",
+   "largo_km": 4.99,
+   "area_ha": 313.4,
+   "vinedo_osm_ha": 189.0
+  }
+ ]
+}

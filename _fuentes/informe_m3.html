@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M3 · Análisis pericial de imagen satelital · SatellAgro</title><link rel="stylesheet" href="informe.css"></head>
+<body><div class="wrap">
+
+<div class="portada">
+  <div class="kicker">Técnicas y Herramientas Modernas II · Módulo 3 · Taller de fotografía</div>
+  <h1>Una foto tomada a 786 km: análisis pericial de una imagen Sentinel-2 y de una falsa alarma</h1>
+  <p class="sub">Parámetros "fotográficos", metadatos, cadena de custodia y peritaje de un caso de SatellAgro</p>
+  <table>
+    <tr><td><b>Grupo</b></td><td>Grupo λ (Grupo 2) · Ingeniería Industrial · UNCuyo · noviembre de 2026</td></tr>
+    <tr><td><b>Integrantes</b></td><td>Juan Martín Zingaretti Martinelli (14634) · Nicolás Sarmiento Lugones (14747) · Raimundo Glasner (14745) · Joaquina Notti (14613) · Manuel Roby (14914) · Juan Cruz Solchaga (14813) · Juan Mateo Hidalgo (14826)</td></tr>
+    <tr><td><b>Evidencia</b></td><td>Escena S2C_19HED_20261105_0_L2A (05/11/2026) y S2B_19HED_20261031_0_L2A (31/10/2026) · Agrelo, Luján de Cuyo</td></tr>
+  </table>
+</div>
+
+<h2>1. Objetivo y enfoque</h2>
+<p>El taller aplica la fotografía como <b>prueba documental</b>: registrar, analizar e interpretar una imagen para que sirva de base a una decisión técnica. En SatellAgro las "fotos" son tomas satelitales y la decisión es si un cuartel necesita que el productor vaya a mirarlo. Por eso trabajamos con una imagen real del satélite Sentinel-2C sobre Agrelo y la analizamos en dos partes, igual que un peritaje:</p>
+<ol>
+  <li><b>Análisis técnico de la toma:</b> los mismos parámetros que en una cámara (óptica, resolución, exposición, iluminación, punto de vista, color, encuadre), leídos desde los metadatos, que cumplen el rol del EXIF.</li>
+  <li><b>Peritaje de una falla:</b> en lugar de la rotura de una pieza, analizamos la "rotura" de una señal. Un lote donde el índice de agua (NDMI) cayó bruscamente habría disparado un rojo en el semáforo. ¿Era estrés hídrico o una falsa alarma?</li>
+</ol>
+
+<h2>2. La evidencia y su cadena de custodia</h2>
+<p>Una foto sólo es prueba si se puede demostrar de dónde viene y que nadie la alteró. Para cada archivo registramos el catálogo de origen, la URL exacta y la huella digital SHA-256 del recorte descargado. Cualquier modificación posterior, aunque sea de un píxel, cambia la huella.</p>
+<table>
+  <tr><th>Campo</th><th>Valor</th></tr>
+  <tr><td>Catálogo</td><td>Earth Search (Element 84, AWS) · colección <code>sentinel-2-l2a</code></td></tr>
+  <tr><td>Producto oficial ESA</td><td class="mono">S2C_MSIL2A_20261105T142751_N0513_R053_T19HED_20261105T190403.SAFE</td></tr>
+  <tr><td>Origen banda B11 (SWIR)</td><td class="mono">https://sentinel-cogs.s3.us-west-2.amazonaws.com/sentinel-s2-l2a-cogs/19/H/ED/2026/11/S2C_19HED_20261105_0_L2A/B11.tif</td></tr>
+  <tr><td>SHA-256 recorte B11</td><td class="mono">db1dbbb331f020c952cd54a9ddc353255f93bb027e40eebb7b375ef2faab3566</td></tr>
+  <tr><td>SHA-256 recorte B8A (NIR)</td><td class="mono">acc4bd83b92cfd7b02b398a81883fc73106fd3cecfb0ac6a9925b87dc9e04d35</td></tr>
+  <tr><td>SHA-256 recorte color real</td><td class="mono">c9222648e237b97d6d2a972d98ef4241220caced6983eccbe9dc413ac19a28e2</td></tr>
+  <tr><td>Herramientas</td><td>pystac-client y rasterio (lectura por ventana de COG); scripts en <code>Modulo 3/codigo</code></td></tr>
+</table>
+<p>El registro completo, con las 12 bandas de las dos fechas y las huellas de cada lámina de este informe, está en <code>evidencia/cadena_de_custodia.json</code>. Las huellas corresponden a los recortes locales, no a los archivos completos de ESA. Para auditarlas basta con volver a descargar la misma ventana con el script incluido.</p>
+
+<h2>3. Análisis técnico de la toma ("EXIF" satelital)</h2>
+<table>
+  <tr><th>Parámetro fotográfico</th><th>Equivalente en Sentinel-2</th><th>Valor en esta toma</th><th>Lectura pericial</th></tr>
+  <tr><td>Cámara y lente</td><td>Instrumento MSI (Multispectral Instrument), sensor de barrido <i>push-broom</i></td><td>Sentinel-2C · MSI</td><td>Mismo instrumento en toda la serie: imágenes comparables entre fechas.</td></tr>
+  <tr><td>Fecha y hora</td><td><code>datetime</code></td><td>05/11/2026 14:41:56 UTC (11:41 hora argentina)</td><td>Toma de media mañana, como todas las pasadas (órbita heliosincrónica).</td></tr>
+  <tr><td>Resolución ("megapíxeles")</td><td>Tamaño de píxel en el terreno</td><td>10 m (rojo, NIR) · 20 m (B8A, SWIR, SCL)</td><td>Un píxel de 20 m cubre 8 a 10 hileras de espaldero: ve el cuartel, no la planta.</td></tr>
+  <tr><td>Exposición</td><td>Cuantización y rango de reflectancia</td><td>12 bits; 0 % de píxeles saturados o defectuosos</td><td>Histogramas sin cortes en negro ni en blanco (figura 3): la toma está bien "expuesta".</td></tr>
+  <tr><td>Iluminación</td><td>Elevación y azimut solar</td><td>62,4° de elevación · azimut 57° (noreste)</td><td>Las sombras caen hacia el suroeste y miden ~0,5 veces la altura del objeto. Luz alta y pareja.</td></tr>
+  <tr><td>Punto de vista</td><td>Ángulo de incidencia de la vista</td><td>2,9° (casi cenital)</td><td>Distorsión geométrica despreciable: las superficies se pueden medir.</td></tr>
+  <tr><td>"Niebla" y nubes</td><td>Corrección atmosférica y cobertura</td><td>L2A (Sen2Cor) · nubes 0,49 % · cirros finos 0,48 %</td><td>Atmósfera limpia. La SCL acierta ~84 % según Baetens et al. (2019), así que se mantiene la regla de "salto anómalo".</td></tr>
+  <tr><td>Película / color</td><td>Bandas elegidas para la composición</td><td>13 bandas disponibles</td><td>La misma toma "revelada" con otras bandas muestra cosas distintas (figura 2).</td></tr>
+  <tr><td>Encuadre</td><td>Recorte y proyección</td><td>9,3 × 8,9 km · EPSG:32719 (UTM 19S) · norte arriba</td><td>Recorte centrado en Agrelo: oeste agrícola, piedemonte al este.</td></tr>
+  <tr><td>Revelado</td><td>Línea base de procesamiento</td><td>05.13 · offset BOA ya aplicado</td><td>Reflectancia = valor digital / 10 000. Sin esto el NDMI daría mal.</td></tr>
+</table>
+
+<figure><img src="../Modulo 3/evidencia/01_escena_color_real.png" alt="Escena completa en color real">
+<figcaption>Figura 1. Escena del 05/11/2026 en color real (B4-B3-B2). Recuadro: lote del caso. Al este, el piedemonte; al oeste, la trama de cuarteles regados por los canales Flores y Corvalán.</figcaption></figure>
+
+<figure><img src="../Modulo 3/evidencia/02_composiciones.png" alt="Composiciones color real y SWIR-NIR-Rojo">
+<figcaption>Figura 2. La misma toma con dos "películas". En SWIR·NIR·Rojo la vegetación con agua se ve verde brillante y el suelo seco en tonos rosados y lilas: el contraste que el ojo no ve en color real.</figcaption></figure>
+
+<figure><img src="../Modulo 3/evidencia/04_exposicion_y_scl.png" alt="Histogramas y clases SCL">
+<figcaption>Figura 3. Izquierda: histogramas de reflectancia de las cuatro bandas que usa SatellAgro; ninguna se recorta. Derecha: clasificación de escena (SCL) de ESA. El 88,5 % del recorte es suelo desnudo y el 11,3 % vegetación, porque a principios de noviembre la vid recién brota.</figcaption></figure>
+
+<h3>Composición y contexto</h3>
+<p>Leída como fotografía documental, la escena tiene una composición muy clara. La trama ortogonal de cuarteles ocupa los dos tercios occidentales. El piedemonte de la precordillera, con su drenaje dendrítico, ocupa el tercio oriental. La RN40 (Acceso Sur), en sentido norte-sur, separa ambos mundos, y la RN7 la cruza de este a oeste en el norte del recorte. La saturación de color es baja porque domina el suelo. Los pocos verdes intensos son, probablemente, pasturas y alfalfares, que en primavera crecen antes que la vid. Ese contexto ya anticipa el riesgo principal de una lectura automática: <b>en primavera, la mayoría de los cambios bruscos de verde no son de la vid</b>.</p>
+
+<h2 class="salto">4. Peritaje de una falsa alarma</h2>
+<h3>4.1 El hecho</h3>
+<p>Al procesar la imagen del 05/11/2026 con la regla de SatellAgro (NDMI de hoy contra la mediana de los 30 días previos), encontramos unas <b>98 ha</b> de píxeles con una caída del NDMI de 0,15 o más. Un lote compacto de ~7 ha a unos 5 km al noroeste del pueblo de Agrelo, junto a la RN7 (33,1012° S · 68,9383° O), mostró el patrón más nítido. Si se tomara sólo el NDMI, el semáforo habría marcado <b>"Posible estrés hídrico"</b>.</p>
+
+<figure><img src="../Modulo 3/evidencia/03_caso_antes_despues.png" alt="Lote antes y después">
+<figcaption>Figura 4. Lote del caso (círculo) el 31/10 y el 05/11/2026: color real, composición SWIR-NIR-Rojo, NDVI y NDMI. Recorte de ~900 m de lado.</figcaption></figure>
+
+<h3>4.2 Mediciones</h3>
+<table>
+  <tr><th>Índice (media en el círculo)</th><th class="n">31/10/2026</th><th class="n">05/11/2026</th><th class="n">Cambio</th></tr>
+  <tr><td>NDVI (verdor, 10 m)</td><td class="n">0,448</td><td class="n">0,157</td><td class="n">−0,291</td></tr>
+  <tr><td>NDMI (agua del canopeo, 20 m)</td><td class="n">0,214</td><td class="n">−0,006</td><td class="n">−0,220</td></tr>
+</table>
+
+<h3>4.3 Análisis de la "rotura"</h3>
+<p>Igual que en una fractura, la forma de la falla delata su mecanismo:</p>
+<ul>
+  <li><b>Velocidad:</b> el cambio ocurre en 5 días. El estrés hídrico en una planta leñosa se instala de forma progresiva, a lo largo de semanas.</li>
+  <li><b>Geometría:</b> la caída es uniforme dentro de un rectángulo y se corta en los bordes rectos del lote. El estrés por riego se reparte en manchones que siguen el suelo y el recorrido del agua.</li>
+  <li><b>Firma conjunta:</b> el NDVI cae junto con el NDMI, incluso más. El NDMI mide agua × hoja; si desaparece la hoja, cae aunque la planta no tenga sed. En 2.408 de los 2.466 píxeles con caída fuerte del NDMI (98 %), el NDVI también bajó más de 0,10.</li>
+  <li><b>Color real:</b> el lote pasa de verde a color suelo. En la composición SWIR se ve lila, el tono del suelo desnudo, sin la transición amarillenta típica de una planta que se marchita.</li>
+</ul>
+
+<div class="caja">
+<p><b>Dictamen.</b> El lote <b>no sufrió estrés hídrico</b>: perdió su cobertura verde por una acción humana, muy probablemente un corte o cosecha de forraje (pastura o alfalfa; no verificado en campo). La caída del NDMI es una <b>falsa alarma por menos hojas</b>, la primera de las tres causas identificadas en el proyecto, junto con el suelo que se seca y la fenología.</p>
+</div>
+
+<h3>4.4 Consecuencias para el sistema</h3>
+<ol>
+  <li><b>El NDMI nunca se informa solo.</b> Si el NDVI cae junto con el NDMI, el estado no puede ser "Posible estrés hídrico". Corresponde "A revisar" o "No evaluable aún".</li>
+  <li><b>Sólo cuarteles de vid.</b> El análisis debe limitarse a los polígonos que dibuja el productor. Muchos de estos cambios bruscos ocurren en cultivos vecinos.</li>
+  <li><b>Un rojo es una pregunta, no un diagnóstico.</b> Toda salida debe llevar fecha de imagen y confianza. Este caso es material para explicarlo a productores e inspectores.</li>
+  <li><b>Evidencia para calibrar.</b> Los casos así sirven para medir la fracción de falsas alarmas, que el modelo de mercado (Módulo 5) identifica como la variable que más pesa en la reputación del servicio.</li>
+</ol>
+
+<h2>5. Conclusión</h2>
+<p>Una imagen satelital se puede tratar con el mismo rigor que una fotografía pericial. Se documentan su origen y su integridad, se interpretan sus parámetros de toma y se separa lo que muestra de lo que parece mostrar. El caso analizado reproduce lo que el prototipo había visto en su corrida del 5 de noviembre: una caída fuerte del NDMI acompañada de una caída del NDVI, que apunta a menos hojas y no a falta de agua.</p>
+
+<div class="pie">SatellAgro · Grupo λ (Grupo 2) · TyHM II 2026 · Contiene datos Copernicus Sentinel-2 modificados (2026), ESA. Procesamiento y láminas generados por el grupo con Python; informe redactado con asistencia de IA (Claude) y revisado por el equipo.</div>
+</div></body></html>

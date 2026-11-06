@@ -1,0 +1,78 @@
+{
+ "ficha_imagen": {
+  "datetime": "2026-11-05T14:41:56.854000Z",
+  "platform": "sentinel-2c",
+  "instruments": [
+   "msi"
+  ],
+  "s2:processing_baseline": "05.13",
+  "eo:cloud_cover": 0.493469,
+  "view:sun_elevation": 62.422460672103895,
+  "view:sun_azimuth": 57.0822344951849,
+  "view:incidence_angle": 2.8942199047775716,
+  "view:azimuth": 199.55088793315784,
+  "s2:degraded_msi_data_percentage": 0.0144,
+  "s2:saturated_defective_pixel_percentage": 0,
+  "s2:vegetation_percentage": 7.61397,
+  "s2:not_vegetated_percentage": 91.356087,
+  "s2:cloud_shadow_percentage": 9e-05,
+  "s2:thin_cirrus_percentage": 0.483532,
+  "s2:reflectance_conversion_factor": 1.01579265154583,
+  "grid:code": "MGRS-19HED",
+  "s2:product_uri": "S2C_MSIL2A_20261105T142751_N0513_R053_T19HED_20261105T190403.SAFE",
+  "s2:generation_time": "2026-11-05T19:04:03.000000Z",
+  "proj:code": "EPSG:32719"
+ },
+ "caso": {
+  "lon": -68.93831,
+  "lat": -33.1012,
+  "valores": {
+   "20261031": {
+    "ndvi": 0.448,
+    "ndmi": 0.214
+   },
+   "20261105": {
+    "ndvi": 0.157,
+    "ndmi": -0.006
+   }
+  }
+ },
+ "scl_pct": {
+  "Zona oscura": 0.015,
+  "Vegetación": 11.336,
+  "Suelo desnudo": 88.533,
+  "Agua": 0.016,
+  "No clasif.": 0.097,
+  "Cirro": 0.003
+ },
+ "bandas": {
+  "red": {
+   "min_dn": 130,
+   "max_dn": 9165,
+   "p2": 526.0,
+   "p98": 2527.0,
+   "sin_dato_px": 0
+  },
+  "nir": {
+   "min_dn": 156,
+   "max_dn": 8535,
+   "p2": 1414.0,
+   "p98": 3757.0,
+   "sin_dato_px": 0
+  },
+  "nir08": {
+   "min_dn": 1,
+   "max_dn": 6558,
+   "p2": 1448.0,
+   "p98": 3653.0,
+   "sin_dato_px": 0
+  },
+  "swir16": {
+   "min_dn": 182,
+   "max_dn": 9599,
+   "p2": 1638.0,
+   "p98": 3284.0,
+   "sin_dato_px": 0
+  }
+ }
+}

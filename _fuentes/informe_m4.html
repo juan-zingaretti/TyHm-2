@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M4 · SIG de la zona piloto · SatellAgro</title><link rel="stylesheet" href="informe.css"></head>
+<body><div class="wrap">
+
+<div class="portada">
+  <div class="kicker">Técnicas y Herramientas Modernas II · Módulo 4 · Sistemas de Información Geográfica</div>
+  <h1>La zona piloto de SatellAgro en un SIG: cuarteles, canales y agua desde el satélite</h1>
+  <p class="sub">Actividad 1: análisis vectorial de Agrelo · Actividad 2: análisis raster NDVI/NDMI con Sentinel-2</p>
+  <table>
+    <tr><td><b>Grupo</b></td><td>Grupo λ (Grupo 2) · Ingeniería Industrial · UNCuyo · noviembre de 2026</td></tr>
+    <tr><td><b>Integrantes</b></td><td>Juan Martín Zingaretti Martinelli (14634) · Nicolás Sarmiento Lugones (14747) · Raimundo Glasner (14745) · Joaquina Notti (14613) · Manuel Roby (14914) · Juan Cruz Solchaga (14813) · Juan Mateo Hidalgo (14826)</td></tr>
+    <tr><td><b>Zona</b></td><td>Agrelo, Luján de Cuyo (Mendoza) · recorte de 9,3 × 8,9 km (8.294 ha) · EPSG:32719</td></tr>
+  </table>
+</div>
+
+<h2>1. Objetivo</h2>
+<p>Construir el sistema de información geográfica de la zona piloto de SatellAgro, para responder tres preguntas del proyecto:</p>
+<ul>
+  <li>¿Cuántos cuarteles de vid hay y qué estado tienen hoy?</li>
+  <li>¿Qué superficie de viñedo depende de cada canal y de cada bodega? Esto define los canales de llegada de la estrategia comercial.</li>
+  <li>¿Cómo cambia la vegetación entre fechas y entre años?</li>
+</ul>
+
+<h2>2. Datos y herramientas</h2>
+<table>
+  <tr><th>Capa</th><th>Tipo</th><th>Fuente</th></tr>
+  <tr><td>Cuarteles de viñedo (81 polígonos)</td><td>Vector, polígono</td><td>OpenStreetMap, <code>landuse=vineyard</code></td></tr>
+  <tr><td>Canales y acequias (Canal Flores, Canal Corvalán y otros)</td><td>Vector, línea</td><td>OpenStreetMap, <code>waterway=canal|ditch</code></td></tr>
+  <tr><td>Rutas (RN40 Acceso Sur, RN7)</td><td>Vector, línea</td><td>OpenStreetMap</td></tr>
+  <tr><td>Bodegas (9) y localidades</td><td>Vector, punto</td><td>OpenStreetMap, <code>craft=winery</code>, <code>place</code></td></tr>
+  <tr><td>Bandas B04, B08, B8A, B11 y SCL de 6 fechas</td><td>Raster, 10 y 20 m</td><td>Copernicus Sentinel-2 L2A vía Earth Search (AWS)</td></tr>
+</table>
+<p>El procesamiento se hizo con scripts de Python (rasterio, shapely, pyproj) que reproducen paso a paso las herramientas de QGIS: reproyección, calculadora raster, estadística zonal, Voronoi, Delaunay, buffer y cálculo de áreas. Los scripts están en <code>Modulo 4/codigo</code>. Todas las capas resultantes (<code>.geojson</code> y <code>.tif</code>) se abren directamente en QGIS. Los mapas web se hicieron con Leaflet, la misma biblioteca que usa qgis2web.</p>
+
+<h3>Ajuste de proyección</h3>
+<p>Las capas OSM vienen en grados (EPSG:4326). Para medir áreas y distancias sin distorsión, todo se reproyectó a <b>EPSG:32719 (WGS 84 / UTM zona 19S)</b>, que es además el sistema nativo del mosaico Sentinel-2 19HED. Las áreas se calcularon como <code>área / 10 000</code> para expresarlas en hectáreas, igual que <code>$area / 10000</code> en la calculadora de campos de QGIS.</p>
+
+<h2>3. Actividad 1 · Análisis vectorial de la zona piloto</h2>
+<h3>3.1 Cuarteles y semáforo del 05/11/2026</h3>
+<p>Para cada cuartel se calculó la media de NDVI y NDMI en sus píxeles válidos (estadística zonal). Después se aplicó la lógica de estados de SatellAgro: NDMI del día contra la mediana de las imágenes de los 30 días previos (06/10 y 31/10), con umbrales ilustrativos todavía no calibrados en campo.</p>
+<table>
+  <tr><th>Estado</th><th class="n">Cuarteles</th><th class="n">Superficie (ha)</th><th>Lectura</th></tr>
+  <tr><td>Sin señales de estrés</td><td class="n">71</td><td class="n">2.661,7</td><td>El NDMI sube con la brotación: no hay caídas.</td></tr>
+  <tr><td>No evaluable aún</td><td class="n">10</td><td class="n">519,3</td><td>NDVI &lt; 0,25: poca hoja para evaluar.</td></tr>
+  <tr><td>Atención / Posible estrés</td><td class="n">0</td><td class="n">0</td><td>Ningún cuartel de vid cae en rojo a principios de noviembre.</td></tr>
+  <tr class="destacado"><td>Total</td><td class="n">81</td><td class="n">3.181,0</td><td></td></tr>
+</table>
+<p>El resultado es coherente con la fenología: a principios de noviembre la vid está brotando y el índice de agua sube. De las ~98 ha con caídas fuertes del NDMI (≥ 0,15) en esa fecha, el 87 % está fuera de los polígonos de vid, en lotes cortados o cosechados (ver Módulo 3). Las ~12 ha restantes son manchones dentro de polígonos grandes, que no alcanzan a mover la media de ningún cuartel. Es otra razón para que el productor dibuje cuarteles chicos y homogéneos. Los polígonos de OSM son aproximados: algunos agrupan varios cuarteles reales. En el piloto se reemplazan por los que dibuja el productor en el panel.</p>
+
+<h3>3.2 Área de influencia de los canales (buffer de 300 m)</h3>
+<table>
+  <tr><th>Canal</th><th class="n">Largo en el recorte (km)</th><th class="n">Área del buffer (ha)</th><th class="n">Viñedo dentro (ha)</th></tr>
+  <tr><td>Canal Corvalán</td><td class="n">4,57</td><td class="n">288,3</td><td class="n">217,5</td></tr>
+  <tr><td>Canal Flores</td><td class="n">4,99</td><td class="n">313,4</td><td class="n">189,0</td></tr>
+  <tr><td>Canales y acequias sin nombre en OSM</td><td class="n">13,99</td><td class="n">756,5</td><td class="n">401,9</td></tr>
+</table>
+<p>El Canal Corvalán es el más "vitícola": el 75 % de su franja de influencia es viñedo. Para la estrategia de guerrilla, que entra cauce por cauce, es el mejor candidato a primer cauce piloto. Esto se debe confirmar con el padrón de la Inspección de Cauce correspondiente en el DGI.</p>
+
+<h3>3.3 Voronoi y Delaunay de bodegas</h3>
+<p>Los <b>polígonos de Voronoi</b> asignan a cada bodega la zona más cercana a ella que a cualquier otra: una aproximación a su área natural de proveedores y vecinos. La <b>triangulación de Delaunay</b> une las bodegas vecinas y mide su conectividad. La distancia media entre bodegas vecinas es de <b>2,24 km</b>.</p>
+<table>
+  <tr><th>Bodega (OSM)</th><th class="n">Celda Voronoi (ha)</th><th class="n">Viñedo en la celda (ha)</th></tr>
+  <tr><td>Belasco de Baquedano</td><td class="n">4.191,3</td><td class="n">1.666,6</td></tr>
+  <tr><td>Bodega Melipal</td><td class="n">824,3</td><td class="n">366,8</td></tr>
+  <tr><td>Bodega Séptima</td><td class="n">445,2</td><td class="n">252,3</td></tr>
+  <tr><td>Bodega Sottano</td><td class="n">315,0</td><td class="n">228,8</td></tr>
+  <tr><td>Terrazas de los Andes</td><td class="n">240,3</td><td class="n">196,4</td></tr>
+  <tr><td>Viña Cobos</td><td class="n">347,7</td><td class="n">147,2</td></tr>
+  <tr><td>Bodega Favre</td><td class="n">1.390,5</td><td class="n">136,8</td></tr>
+  <tr><td>Bodega Ruca Malen</td><td class="n">289,4</td><td class="n">102,4</td></tr>
+  <tr><td>Bodega Norton</td><td class="n">230,1</td><td class="n">83,2</td></tr>
+</table>
+<p>Las celdas de borde (Belasco de Baquedano, Favre) son grandes porque se extienden hasta el límite del recorte, incluido el piedemonte. Aun así, el análisis muestra que una sola bodega puede tener cientos de hectáreas de viñedo a su alrededor. Ese es el canal "bodega con proveedores" del modelo de negocio. Los nombres provienen de OSM y no implican ningún vínculo con el proyecto.</p>
+
+<figure><img src="../Modulo 4/figuras/lamina_actividad1.png" alt="Lámina de la Actividad 1"><figcaption>Figura A. Izquierda: cuarteles de vid con el estado SatellAgro del 05/11/2026, canales, acequias, franja de influencia de 300 m y rutas. Derecha: bodegas con sus polígonos de Voronoi y la triangulación de Delaunay. Fondo: Sentinel-2 del 05/11/2026 en color real.</figcaption></figure>
+
+<div class="caja"><p><b>Mapa web interactivo de la Actividad 1:</b> cuarteles con semáforo y datos por clic, canales, buffers, rutas, bodegas, Voronoi y Delaunay. Archivo <code>Modulo 4/mapa cuarteles/index.html</code>.</p></div>
+
+<h2 class="salto">4. Actividad 2 · Análisis raster: agua y verdor desde el satélite</h2>
+<h3>4.1 Procesamiento</h3>
+<ol>
+  <li>Búsqueda de escenas en el catálogo STAC con menos del 30 % de nubes y descarga sólo de la ventana del recorte.</li>
+  <li>Conversión a reflectancia (valor digital / 10 000) y máscara con la capa SCL de ESA: sólo se conservan píxeles de vegetación (4) y suelo (5). En las seis fechas quedó válido entre el 97,2 % y el 99,9 % del recorte.</li>
+  <li>Calculadora raster: NDVI = (B08 − B04)/(B08 + B04) a 10 m y NDMI = (B8A − B11)/(B8A + B11) a 20 m.</li>
+  <li>ΔNDMI: NDMI del 05/11/2026 menos la mediana de las imágenes del 06/10 y del 31/10.</li>
+</ol>
+
+<figure><img src="../Modulo 4/figuras/serie_indices_vinedos.png" alt="Serie temporal"><figcaption>Figura 1. NDVI y NDMI medios de los cuarteles de viñedo en las seis fechas. De septiembre a noviembre de 2026 se ve la brotación: el NDVI pasa de 0,19 a 0,32 y el NDMI de −0,07 a 0,03.</figcaption></figure>
+
+<h3>4.2 Comparación: misma fecha, dos años</h3>
+<p>Siguiendo la idea de comparar dos períodos, contrastamos el 05/11/2024 con el 05/11/2026 y medimos la superficie por clase de NDVI.</p>
+<table>
+  <tr><th>Indicador</th><th class="n">05/11/2024</th><th class="n">05/11/2026</th><th class="n">Diferencia</th></tr>
+  <tr><td>Vegetación vigorosa (NDVI &gt; 0,4), todo el recorte</td><td class="n">1.874,6 ha</td><td class="n">1.642,0 ha</td><td class="n">−232,6 ha (−12 %)</td></tr>
+  <tr><td>Vegetación vigorosa dentro de viñedos OSM</td><td class="n">1.151,2 ha</td><td class="n">810,2 ha</td><td class="n">−341,0 ha (−30 %)</td></tr>
+  <tr><td>Suelo o vegetación rala (NDVI &lt; 0,2)</td><td class="n">1.445,4 ha</td><td class="n">1.801,8 ha</td><td class="n">+356,4 ha</td></tr>
+  <tr><td>NDVI medio del recorte</td><td class="n">0,314</td><td class="n">0,301</td><td class="n">−0,013</td></tr>
+</table>
+<figure><img src="../Modulo 4/figuras/ndvi_tres_fechas.png" alt="NDVI tres fechas"><figcaption>Figura 2. NDVI del 05/11/2024, del 04/01/2026 (pleno verano) y del 05/11/2026.</figcaption></figure>
+<p><b>Lectura con cautela:</b> en la misma fecha de calendario, 2026 muestra menos vegetación vigorosa en los viñedos que 2024. Con sólo dos imágenes no se puede separar un <b>atraso fenológico</b> (una primavera más fría retrasa la brotación) de un cambio de uso o de manejo. Esto ilustra por qué SatellAgro compara cada lote <b>contra su propia historia reciente</b> (mediana de 30 días) y no contra otro año. La comparación interanual exige series completas de temporada.</p>
+
+<figure><img src="../Modulo 4/figuras/ndmi_y_delta.png" alt="NDMI y delta"><figcaption>Figura 3. NDMI del 05/11/2026 y su cambio contra la mediana de los 30 días previos. Rojo: caída del índice de agua; azul: aumento. Las manchas rojas rectangulares son lotes cortados o cosechados, no estrés hídrico (Módulo 3).</figcaption></figure>
+
+<div class="caja"><p><b>Mapa web interactivo de la Actividad 2:</b> NDMI, ΔNDMI y NDVI de varias fechas superpuestos sobre la imagen satelital, con contorno de cuarteles, control de opacidad y el caso del Módulo 3. Archivo <code>Modulo 4/mapa ndmi/index.html</code>.</p></div>
+
+<h2>5. Conclusiones</h2>
+<ul>
+  <li>El SIG permite pasar de "una imagen" a <b>una tabla por cuartel</b>, que es lo que necesita el productor.</li>
+  <li>El Canal Corvalán y las bodegas con muchas hectáreas a su alrededor son los puntos de entrada naturales para la estrategia comercial.</li>
+  <li>En primavera, la señal está dominada por la brotación y por los cultivos vecinos. Recortar a los polígonos de vid y leer NDMI junto con NDVI es indispensable.</li>
+  <li>La comparación entre años necesita series completas; la regla de SatellAgro (cada lote contra su mediana reciente) es más robusta.</li>
+</ul>
+
+<div class="pie">SatellAgro · Grupo λ (Grupo 2) · TyHM II 2026 · Contiene datos Copernicus Sentinel-2 modificados (2024–2026), ESA. Datos vectoriales © colaboradores de OpenStreetMap (ODbL). Procesamiento en Python; informe redactado con asistencia de IA (Claude) y revisado por el equipo.</div>
+</div></body></html>

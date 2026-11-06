@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M2 · Plan del piloto · SatellAgro</title><link rel="stylesheet" href="informe.css"></head>
+<body><div class="wrap">
+
+<div class="portada">
+  <div class="kicker">Técnicas y Herramientas Modernas II · Módulo 2 · Asistente de redacción con IA</div>
+  <h1>Plan del piloto SatellAgro · Temporada 2026–27</h1>
+  <p class="sub">Señal satelital de estrés hídrico para viñedos con riego en Agrelo, Luján de Cuyo</p>
+  <table>
+    <tr><td><b>Grupo</b></td><td>Grupo λ (Grupo 2) · Ingeniería Industrial · UNCuyo · noviembre de 2026</td></tr>
+    <tr><td><b>Integrantes</b></td><td>Juan Martín Zingaretti Martinelli (14634) · Nicolás Sarmiento Lugones (14747) · Raimundo Glasner (14745) · Joaquina Notti (14613) · Manuel Roby (14914) · Juan Cruz Solchaga (14813) · Juan Mateo Hidalgo (14826)</td></tr>
+    <tr><td><b>Tipo de documento</b></td><td>Plan ejecutivo de proyecto, redactado con asistencia de IA (ver anexo)</td></tr>
+  </table>
+</div>
+
+<h2>1. Resumen ejecutivo</h2>
+<p>SatellAgro procesa imágenes Sentinel-2 gratuitas y entrega, cada cinco días aproximadamente, un semáforo por cuartel de vid con la fecha de la imagen y un nivel de confianza. No riega ni acciona nada: <b>marca dónde conviene ir a mirar</b> y la decisión queda siempre en el productor.</p>
+<p>Este plan define el piloto de la temporada 2026–27: <b>una a tres fincas en Agrelo</b>, calibración mínima en noviembre, llegada a los regantes a través de <b>una Inspección de Cauce</b> y cobro recién desde octubre de 2027, cuando el sistema esté validado. La operación cuesta casi nada en datos; lo caro es el trabajo de campo. El costo estimado de la primera temporada es de unos <b>USD 1.700</b>.</p>
+<div class="kpis">
+  <div class="kpi"><b>1–3</b><span>fincas piloto</span></div>
+  <div class="kpi"><b>~5 días</b><span>entre imágenes</span></div>
+  <div class="kpi"><b>0 USD</b><span>costo de los datos</span></div>
+  <div class="kpi"><b>≤ 10 %</b><span>meta de falsas alarmas</span></div>
+</div>
+
+<h2>2. Contexto y problema</h2>
+<p>El agua superficial de Mendoza depende de la nieve del invierno y se distribuye por turnos a través de las Inspecciones de Cauce. Con un turno fijo, el productor decide qué cuartel riega. <b>Regar de más</b> desperdicia agua que en años de emergencia hídrica le falta a otro cuartel. <b>Regar de menos</b> provoca cierre de estomas, pérdida de hojas y de rinde. En vid para vino, además, se busca un estrés moderado que mejora color y concentración: el objetivo es <b>controlarlo, no evitarlo</b>.</p>
+
+<h2>3. Objetivos del piloto</h2>
+<ol>
+  <li><b>Técnico:</b> calibrar los umbrales del semáforo contra mediciones de campo y bajar las falsas alarmas al 10 % o menos.</li>
+  <li><b>De adopción:</b> lograr el acuerdo de una Inspección de Cauce y que sus regantes pidan el reporte por iniciativa propia (opt-in).</li>
+  <li><b>De negocio:</b> documentar uno o dos casos de éxito con números para abrir dos o tres cauces más en 2027–28.</li>
+</ol>
+
+<h2>4. Alcance</h2>
+<table>
+  <tr><th>Qué hace</th><th>Qué no hace</th></tr>
+  <tr><td>
+    <ul><li>Baja imágenes Sentinel-2 L2A del lote (vía STAC, sólo el recorte).</li>
+    <li>Calcula NDMI (agua) y NDVI (verdor) con la máscara SCL oficial de ESA.</li>
+    <li>Compara el NDMI de hoy con la mediana del lote en 30 días.</li>
+    <li>Entrega panel web, reporte HTML y email de alerta.</li></ul>
+  </td><td>
+    <ul><li>No riega ni acciona nada.</li>
+    <li>No da milímetros de agua (todavía).</li>
+    <li>No inventa un dato si hay nubes.</li>
+    <li>No manda reportes a quien no los pidió.</li></ul>
+  </td></tr>
+</table>
+
+<h3>Los siete estados del semáforo</h3>
+<table>
+  <tr><th>Estado</th><th>Significado</th><th>Acción</th></tr>
+  <tr><td>Sin señales de estrés</td><td>El agua del cultivo está estable</td><td>—</td></tr>
+  <tr><td>Atención</td><td>Baja leve del NDMI</td><td>Vigilar en la próxima imagen</td></tr>
+  <tr><td>Posible estrés hídrico</td><td>Baja marcada del NDMI</td><td>Conviene ir a revisar el cuartel</td></tr>
+  <tr><td>No evaluable aún</td><td>Poca vegetación: brotación, poda, suelo</td><td>Esperar desarrollo de hoja</td></tr>
+  <tr><td>Juntando historia</td><td>Falta historia propia para comparar</td><td>Esperar más imágenes</td></tr>
+  <tr><td>Sin dato nuevo</td><td>Más de 10 días sin imagen limpia</td><td>Email al productor</td></tr>
+  <tr><td>A revisar</td><td>Cambio brusco sospechoso</td><td>Email; no se informa como recomendación</td></tr>
+</table>
+<p>Cuatro de los siete estados significan "no sé". Es deliberado: el sistema <b>no disfraza una inferencia de dato</b>.</p>
+
+<h2>5. Principios de operación</h2>
+<ul>
+  <li><b>El sistema recomienda, el productor decide.</b></li>
+  <li><b>Siempre dice de cuándo es el dato</b>, con confianza alta, media o baja según nubes y antigüedad.</li>
+  <li><b>Fallback antes que código:</b> sin imagen nueva se informa la última válida con su fecha; ante un resultado anómalo se marca "a revisar"; si falla el servicio, se avisa por email y el productor riega como siempre.</li>
+  <li><b>Datos personales de productores fuera del repositorio</b> y nada patentable publicado sin acuerdo del equipo.</li>
+</ul>
+
+<h2>6. Plan de trabajo y calendario</h2>
+<table>
+  <tr><th>Período</th><th>Actividades</th><th>Entregable</th></tr>
+  <tr><td>Nov 2026</td><td>Calibración mínima con 1–2 fincas piloto. Primer contacto con una Inspección de Cauce.</td><td>Umbrales iniciales; reunión con el inspector</td></tr>
+  <tr><td>Dic 2026</td><td>Primeros reportes a regantes del cauce piloto que los pidan. Alertas cada 5 días.</td><td>Reportes gratis de una página por cuartel</td></tr>
+  <tr><td>Ene–Feb 2027</td><td>Calor y envero: el momento de mayor valor. Alertas sólo cuando cambia el estado.</td><td>Serie de mediciones de campo y alertas</td></tr>
+  <tr><td>Mar–Abr 2027</td><td>Cosecha. Cierre de temporada, resultados y testimonios.</td><td>Informe de validación; tasa de falsas alarmas medida</td></tr>
+  <tr><td>May–Jul 2027</td><td>Caso de éxito a INTA y jornadas. Preparar 2–3 cauces más.</td><td>1–2 casos documentados</td></tr>
+  <tr><td>Oct 2027</td><td>Inicio del cobro por suscripción (USD 150 por productor y temporada, supuesto).</td><td>Primeras suscripciones pagas</td></tr>
+</table>
+
+<h3>Diseño de la validación en campo</h3>
+<ul>
+  <li><b>3–4 cuarteles</b> de 1 ha o más, de la misma variedad, con riego por goteo y por superficie.</li>
+  <li><b>6–8 plantas fijas</b> por cuartel, lejos de los bordes.</li>
+  <li>Medición de referencia del estado hídrico en planta <b>±1 día</b> de cada pasada del satélite. El método se define con el agrónomo asesor; la opción habitual es potencial hídrico de tallo con cámara de presión.</li>
+  <li>Meta: <b>20–30 fechas útiles</b> en la temporada completa.</li>
+</ul>
+
+<h2>7. Modelo de negocio</h2>
+<table>
+  <tr><th>Actor</th><th>Por qué lo usaría</th></tr>
+  <tr><td>Productor</td><td>No regar de más con agua cada vez más escasa, y no pasarse de estrés. Sabe qué cuartel mirar primero.</td></tr>
+  <tr><td>Bodega</td><td>Uniformidad de calidad en sus uvas y en las de sus proveedores; puede ofrecérselo a todos ellos.</td></tr>
+  <tr><td>Inspección de Cauce</td><td>Un mapa del cauce completo para mostrar uso eficiente del turno en años de emergencia hídrica.</td></tr>
+</table>
+<p><b>Socios:</b> Inspecciones de Cauce, INTA, agrónomos asesores y bodegas. <b>Ingresos:</b> suscripción por productor y temporada. <b>Costos:</b> horas de campo, reuniones y hosting; los datos tienen costo cero. <b>Competencia:</b> Manna Irrigation (Israel) y Climate FieldView (Bayer). Nuestro lugar es un servicio hecho para Cuyo, honesto con la incertidumbre, apto para fincas chicas y con llegada por el cauce.</p>
+
+<h2>8. Estrategia de llegada: marketing de guerrilla</h2>
+<p>Ingenio, tiempo y precisión en lugar de presupuesto (Levinson, 1984). La secuencia es la "picadura" en cinco pasos:</p>
+<ol>
+  <li>Elegir un cauce vitícola y conseguir una reunión con su inspector.</li>
+  <li>Regalarle el mapa del cauce de toda la temporada, sin nombres de productores.</li>
+  <li>El inspector invita a los regantes a pedir su reporte gratis (opt-in).</li>
+  <li>Cada reporte cierra con: "¿querés que te avisemos cada 5 días?".</li>
+  <li>Al cierre, uno o dos casos con números para el próximo cauce.</li>
+</ol>
+<p>La simulación del mercado (Módulo 5) respalda esta estrategia. Con las mismas condiciones, la guerrilla calibrada llega a 82 suscriptos en la segunda temporada, contra 14 del contacto en frío. Avisar en cada imagen ("zumbido") baja la retención del 90 % al 58 %. Y el cuello de botella son las reuniones con inspectores, no la capacidad de hacer reportes.</p>
+
+<h2>9. Presupuesto de la primera temporada</h2>
+<table>
+  <tr><th>Concepto</th><th>Supuesto</th><th class="n">USD (nov-26 a mar-27)</th></tr>
+  <tr><td>Imágenes satelitales</td><td>Sentinel-2 abiertas vía Earth Search</td><td class="n">0</td></tr>
+  <tr><td>Servicios y mantenimiento</td><td>USD 50 por semana × 22 semanas</td><td class="n">1.100</td></tr>
+  <tr><td>Reuniones con inspectores</td><td>0,25 por semana × USD 40 (viaje y tiempo)</td><td class="n">220</td></tr>
+  <tr><td>Reportes explicados</td><td>~23 reportes × USD 15 (visita o llamada)</td><td class="n">345</td></tr>
+  <tr class="destacado"><td>Total estimado</td><td>Según el modelo de simulación, escenario guerrilla calibrada</td><td class="n">≈ 1.665</td></tr>
+</table>
+<p>No incluye las horas del equipo en las mediciones de campo ni un eventual instrumental de referencia, que se acuerdan con la finca socia.</p>
+
+<h2>10. Riesgos y respuesta</h2>
+<table>
+  <tr><th>Riesgo</th><th>Qué haríamos</th></tr>
+  <tr><td>Falsas alarmas por menos hojas (poda, deshoje, granizo, corte), suelo que se seca tras el riego, o fenología</td><td>Leer siempre NDMI junto con NDVI; calibrar antes de salir; estado "a revisar" ante cambios bruscos.</td></tr>
+  <tr><td>Alarma que no sale: en riego por superficie el píxel de 20 m es sobre todo suelo y la señal de la planta se diluye</td><td>Priorizar goteo en el piloto; validar en campo; comunicar el límite al productor.</td></tr>
+  <tr><td>Nubes o falta de imagen</td><td>Informar la última imagen válida con su fecha; email si pasan más de 10 días.</td></tr>
+  <tr><td>Patentes (recomendaciones de riego por imágenes, Climate/Bayer)</td><td>No dar milímetros de agua hasta una lectura legal por un agente de la propiedad industrial matriculado.</td></tr>
+  <tr><td>Rechazo por sentirse vigilado</td><td>Nadie recibe un reporte que no pidió; mapas del cauce sin nombres.</td></tr>
+  <tr><td>Datos personales</td><td>Guardarlos fuera del repositorio, en el panel, con acceso restringido.</td></tr>
+</table>
+
+<h2>11. Indicadores de éxito de la temporada</h2>
+<table>
+  <tr><th>Indicador</th><th>Meta</th></tr>
+  <tr><td>Cauces con acuerdo</td><td>≥ 1</td></tr>
+  <tr><td>Fracción de falsas alarmas medida en campo</td><td>≤ 10 %</td></tr>
+  <tr><td>Fechas útiles con medición de campo</td><td>20–30</td></tr>
+  <tr><td>Regantes que piden su reporte</td><td>Registrar y comparar con el modelo (~8 altas a fin de marzo)</td></tr>
+  <tr><td>Retención de suscriptos</td><td>≥ 85 %</td></tr>
+  <tr><td>Casos documentados con números</td><td>1–2</td></tr>
+</table>
+
+<h2>Anexo · Cómo se usó la IA para redactar este plan</h2>
+<ol>
+  <li><b>Fuente de verdad:</b> se le dio al asistente (Claude) la presentación del proyecto, el modelo de simulación y las reglas de negocio. Se le pidió no agregar datos que no estuvieran en esas fuentes.</li>
+  <li><b>Estructura primero:</b> se acordó un índice de plan ejecutivo (resumen, alcance, calendario, presupuesto, riesgos, indicadores) antes de redactar.</li>
+  <li><b>Redacción por secciones</b>, con pedidos concretos: "frases cortas, voz activa, sin jerga, cada cifra con su fuente".</li>
+  <li><b>Curaduría:</b> el equipo revisó cada cifra contra la fuente y marcó como supuesto lo que no está validado (precio, cantidad de cauces, método de medición).</li>
+  <li><b>Lo que no delegamos:</b> las decisiones de alcance, las metas y el tono hacia productores e inspectores.</li>
+</ol>
+
+<div class="pie">SatellAgro · Grupo λ (Grupo 2) · TyHM II 2026 · Plan redactado con asistencia de IA (Claude) y revisado por el equipo. Las cifras de mercado y costos surgen de supuestos del modelo y no son un pronóstico de ventas.</div>
+</div></body></html>

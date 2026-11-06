@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M1 · Toma de decisiones · SatellAgro</title><link rel="stylesheet" href="informe.css"></head>
+<body><div class="wrap">
+
+<div class="portada">
+  <div class="kicker">Técnicas y Herramientas Modernas II · Módulo 1 · Toma de decisiones</div>
+  <h1>Cómo mirar el estrés hídrico de la vid: selección del enfoque tecnológico de SatellAgro</h1>
+  <p class="sub">Investigación asistida por IA y matriz de decisión multicriterio</p>
+  <table>
+    <tr><td><b>Grupo</b></td><td>Grupo λ (Grupo 2) · Ingeniería Industrial · UNCuyo · noviembre de 2026</td></tr>
+    <tr><td><b>Integrantes</b></td><td>Juan Martín Zingaretti Martinelli (14634) · Nicolás Sarmiento Lugones (14747) · Raimundo Glasner (14745) · Joaquina Notti (14613) · Manuel Roby (14914) · Juan Cruz Solchaga (14813) · Juan Mateo Hidalgo (14826)</td></tr>
+    <tr><td><b>Proyecto</b></td><td>SatellAgro: señal satelital para decidir qué cuartel de vid mirar primero (Mendoza)</td></tr>
+  </table>
+</div>
+
+<h2>1. El problema de decisión</h2>
+<p>En Mendoza el agua de riego llega por turnos: la nieve alimenta los ríos, el Departamento General de Irrigación (DGI) distribuye y cada Inspección de Cauce organiza los turnos entre sus regantes. Con un turno fijo y agua cada vez más escasa, la última decisión la toma el productor: <b>qué cuartel regar y cuánto</b>. Hoy la toma por calendario y recorriendo la finca.</p>
+<p>SatellAgro nace para darle una señal de <b>dónde ir a mirar</b>. Antes de construir el prototipo había que decidir con qué tecnología medir el estado hídrico de la vid. Esa elección condiciona el costo, la escala, el tipo de aviso y el modelo de negocio, así que la tratamos como una decisión formal.</p>
+
+<h2>2. Metodología</h2>
+<ol>
+  <li><b>Investigación asistida por IA.</b> Trabajamos con un asistente de IA (Claude) como entorno de investigación: búsqueda y resumen de papers sobre teledetección del agua en vegetación, fuentes de imágenes gratuitas y competencia. Cada afirmación quedó atada a una fuente; las que no se pudieron verificar se descartaron.</li>
+  <li><b>Definición de alternativas</b> que cumplen el objetivo mínimo: decir dónde puede haber estrés hídrico, cuartel por cuartel.</li>
+  <li><b>Criterios y pesos</b> acordados por el equipo a partir del cliente objetivo: productores de vid con riego, muchos con fincas chicas, que no pueden pagar hardware ni consultoría.</li>
+  <li><b>Matriz de decisión ponderada</b> (puntaje 1 a 5) y <b>análisis de sensibilidad</b> duplicando el peso de cada criterio.</li>
+  <li><b>Contraste con datos reales</b>: descargamos imágenes Sentinel-2 de Agrelo (Luján de Cuyo) para comprobar disponibilidad, nubosidad y comportamiento de los índices antes de cerrar la decisión.</li>
+</ol>
+
+<h2>3. Alternativas evaluadas</h2>
+<table>
+  <tr><th>Alternativa</th><th>Qué mide</th><th>Fuente y resolución</th><th>Cuándo avisa</th></tr>
+  <tr><td><b>A · Óptico de agua</b> (NDMI + NDVI)</td><td>Agua del canopeo × cantidad de hojas, a partir del infrarrojo cercano y de onda corta</td><td>Sentinel-2 L2A, gratis, 20 m (NDMI) y 10 m (NDVI), cada ~5 días</td><td>Tarde: cuando la pérdida de agua ya es visible en la hoja</td></tr>
+  <tr><td><b>B · Térmico</b> (CWSI)</td><td>Temperatura del canopeo: la planta estresada cierra estomas y se calienta</td><td>Landsat 8/9, gratis, banda térmica de 100 m, cada ~8 días con los dos satélites</td><td>Temprano: al cierre de estomas</td></tr>
+  <tr><td><b>C · Sensores en finca</b> (IoT)</td><td>Humedad del suelo en puntos fijos</td><td>Hardware propio por cuartel, con telemetría</td><td>Continuo y temprano, pero puntual</td></tr>
+</table>
+<p>Quedó fuera una cuarta familia, la evapotranspiración (modelo FAO-56 con meteorología), porque da milímetros de agua y eso nos expone a la patente activa de recomendaciones de riego por imágenes de Climate (Bayer) en Argentina. La retomamos sólo después de una lectura legal de las reivindicaciones.</p>
+
+<h3>Base científica de la alternativa A</h3>
+<p>La hoja deja una firma en tres colores. La clorofila absorbe el <b>rojo</b> (665 nm); la estructura interna de la hoja refleja mucho el <b>infrarrojo cercano</b> (865 nm, 40–50 %); el agua líquida absorbe el <b>infrarrojo de onda corta</b> (1610 nm). De ahí salen los dos índices:</p>
+<ul>
+  <li><b>NDVI = (NIR − Rojo) / (NIR + Rojo)</b>: cuánta vegetación verde hay. Funciona como filtro: ¿hay planta para evaluar?</li>
+  <li><b>NDMI = (NIR − SWIR) / (NIR + SWIR)</b>: agua del canopeo. Si la planta pierde agua, el SWIR sube y el NDMI baja.</li>
+</ul>
+<p>Fuentes: Gates et al. (1965); Knipling (1970); Carter (1991); Ceccato et al. (2001, 2002); Hunt y Rock (1989); Gerhards et al. (2019); Caruso et al. (2023); Allen et al. (1998, FAO-56); Baetens et al. (2019).</p>
+
+<h2>4. Criterios y matriz de decisión</h2>
+<table>
+  <tr><th>Criterio</th><th class="n">Peso</th><th class="n">A · Sentinel-2</th><th class="n">B · Térmico</th><th class="n">C · Sensores</th><th>Justificación del puntaje</th></tr>
+  <tr><td>Costo de datos para el productor</td><td class="n">25</td><td class="n">5</td><td class="n">5</td><td class="n">2</td><td>A y B usan imágenes abiertas (0 USD). C exige comprar, instalar y mantener equipos en cada cuartel.</td></tr>
+  <tr><td>Cobertura de muchas fincas a la vez</td><td class="n">20</td><td class="n">5</td><td class="n">5</td><td class="n">1</td><td>Una escena satelital cubre un cauce entero; un sensor cubre un punto.</td></tr>
+  <tr><td>Resolución útil para un cuartel</td><td class="n">15</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td>20 m distinguen cuarteles de 1 ha; 100 m mezclan varios. El sensor es puntual: no ve la variabilidad del cuartel.</td></tr>
+  <tr><td>Frecuencia de revisita</td><td class="n">15</td><td class="n">4</td><td class="n">3</td><td class="n">5</td><td>~5 días contra ~8 días; el sensor mide en continuo.</td></tr>
+  <tr><td>Anticipación del aviso</td><td class="n">15</td><td class="n">2</td><td class="n">4</td><td class="n">4</td><td>El NDMI avisa tarde; el térmico y el suelo, antes.</td></tr>
+  <tr><td>Adopción: no instalar nada en finca</td><td class="n">10</td><td class="n">5</td><td class="n">5</td><td class="n">1</td><td>Con A y B el productor sólo dibuja su lote en el panel.</td></tr>
+  <tr class="destacado"><td>Puntaje ponderado (sobre 5)</td><td class="n">100</td><td class="n">4,25</td><td class="n">4,10</td><td class="n">2,60</td><td>A gana por estrecho margen sobre B.</td></tr>
+</table>
+
+<h3>Análisis de sensibilidad</h3>
+<p>Duplicamos el peso de cada criterio, uno por vez, y recalculamos:</p>
+<table>
+  <tr><th>Criterio con peso duplicado</th><th class="n">A</th><th class="n">B</th><th class="n">C</th><th>Ganador</th></tr>
+  <tr><td>Costo de datos</td><td class="n">4,40</td><td class="n">4,28</td><td class="n">2,48</td><td>A</td></tr>
+  <tr><td>Cobertura</td><td class="n">4,38</td><td class="n">4,25</td><td class="n">2,33</td><td>A</td></tr>
+  <tr><td>Resolución</td><td class="n">4,22</td><td class="n">3,83</td><td class="n">2,65</td><td>A</td></tr>
+  <tr><td>Revisita</td><td class="n">4,22</td><td class="n">3,96</td><td class="n">2,91</td><td>A</td></tr>
+  <tr class="destacado"><td>Anticipación del aviso</td><td class="n">3,96</td><td class="n">4,09</td><td class="n">2,78</td><td>B</td></tr>
+  <tr><td>Adopción</td><td class="n">4,32</td><td class="n">4,18</td><td class="n">2,45</td><td>A</td></tr>
+</table>
+<p>La decisión es robusta en cinco de seis casos. Sólo cambia si lo más importante fuera <b>anticiparse al cierre de estomas</b>: ahí el térmico gana. Esto no invalida la elección, pero define el límite honesto de SatellAgro: <b>alcanza para decir dónde ir a mirar, no para anticiparse</b>.</p>
+
+<h2>5. Contraste con datos reales</h2>
+<p>Para no decidir sólo con papers, consultamos el catálogo STAC de Earth Search (AWS) sobre Agrelo y descargamos recortes de seis fechas:</p>
+<ul>
+  <li>Entre el 26/09 y el 05/11/2026 hubo <b>cuatro escenas utilizables</b> del mosaico 19HED. La máscara SCL dejó válido entre el 97,2 % y el 99,9 % del recorte, así que las nubes no son una limitación seria en primavera.</li>
+  <li>El NDVI medio de los viñedos subió de 0,19 (26/09) a 0,32 (05/11): la señal sigue la <b>brotación</b>, y en ese período el sistema debe responder "no evaluable aún" en los cuarteles con poca hoja.</li>
+  <li>En la imagen del 05/11/2026 encontramos unas 98 ha donde el NDMI cayó 0,15 o más, pero en el 98 % de esos píxeles el NDVI también cayó: eran <b>cortes o cosechas</b> (menos hojas), no falta de agua. Esto confirma que el NDMI nunca debe leerse solo y respalda la regla de combinarlo con el NDVI. El caso se analiza en detalle en el Módulo 3.</li>
+</ul>
+
+<h2>6. Decisión</h2>
+<div class="caja">
+<p><b>Elegimos la alternativa A: índices ópticos de Sentinel-2 (NDMI como señal de agua, NDVI como filtro).</b></p>
+<p>Es la mejor resolución y frecuencia disponibles sin costo, cubre cauces enteros sin instalar nada y permite un servicio barato de operar, apto para fincas chicas. La aceptamos con sus límites explícitos:</p>
+<ul>
+  <li>El aviso llega tarde: SatellAgro marca <b>dónde mirar</b>, no cuánto regar.</li>
+  <li>Un rojo es una pregunta, no un diagnóstico: siempre se informa con fecha de imagen y confianza.</li>
+  <li>El térmico (B) queda como <b>evolución futura</b> para ganar anticipación, combinando ambas fuentes.</li>
+  <li>Los sensores de suelo (C) no se descartan como herramienta de <b>calibración</b> en las fincas piloto.</li>
+</ul>
+</div>
+
+<h2>7. Qué aportó la IA y qué decidió el equipo</h2>
+<table>
+  <tr><th>La IA</th><th>El equipo</th></tr>
+  <tr><td>Buscó y resumió papers y fuentes de imágenes; armó la tabla comparativa inicial; escribió los scripts de descarga y cálculo; redactó borradores.</td><td>Definió el cliente, los criterios y los pesos; revisó cada fuente; decidió excluir la evapotranspiración por riesgo de patente; tomó la decisión final.</td></tr>
+</table>
+
+<div class="pie">SatellAgro · Grupo λ (Grupo 2) · TyHM II 2026 · Imágenes: Copernicus Sentinel-2 (ESA), procesadas por el grupo. Este informe fue redactado con asistencia de IA (Claude) y revisado por el equipo.</div>
+</div></body></html>

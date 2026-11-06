@@ -1,0 +1,807 @@
+{UTF-8}
+Reuniones con inspectores por semana=
+	Reuniones iniciales + STEP(Aumento de reuniones, Semana del aumento)
+	~	reunión/Week
+	~	Esfuerzo de campo con escalón: pasa de 0,25 a 1 reunión por semana en la semana del aumento.
+	|
+
+Reuniones iniciales=
+	0.25
+	~	reunión/Week
+	~	1 reunión cada 4 semanas (valor del modelo original).
+	|
+
+Aumento de reuniones=
+	0.75
+	~	reunión/Week
+	~	Altura del escalón. Poner 0 para volver al modelo original.
+	|
+
+Semana del aumento=
+	4
+	~	Week
+	~	Semana 4 = principios de diciembre de 2026.
+	|
+
+Modo de contacto=
+	0
+	~	Dmnl
+	~	0 = opt-in vía inspector (guerrilla); 1 = contacto en frío a todos los regantes.
+	|
+
+Política de alertas=
+	0
+	~	Dmnl
+	~	0 = avisar solo cuando cambia el estado; 1 = avisar en cada imagen (zumbido).
+	|
+
+Fracción de falsas alarmas=
+	Falsas alarmas iniciales - STEP(Mejora por calibración, Semana de calibración)
+	~	Dmnl
+	~	Parte de las alertas que no corresponden a estrés real. 0,3 = umbrales sin calibrar; ~0,1 = calibrados en campo. Se puede tomar de Falsas alarmas / Alertas rojas emitidas en satellagro.mdl.
+	|
+
+Falsas alarmas iniciales=
+	0.3
+	~	Dmnl
+	~	Umbrales sin calibrar.
+	|
+
+Mejora por calibración=
+	0.2
+	~	Dmnl
+	~	Calibrar en campo baja las falsas alarmas de 0,3 a 0,1. Poner 0 para no calibrar.
+	|
+
+Semana de calibración=
+	22
+	~	Week
+	~	Cierre de la primera temporada (fin de marzo de 2027).
+	|
+
+Capacidad de reportes por semana=
+	15
+	~	regante/Week
+	~	Reportes 'picadura' que el equipo puede entregar y explicar por semana.
+	|
+
+Semana de inicio de cobro=
+	48
+	~	Week
+	~	Primera temporada gratis (piloto); se cobra desde oct 2027.
+	|
+
+Cauces en la zona=
+	40
+	~	cauce
+	~	Inspecciones de Cauce con vid en Luján de Cuyo, Maipú y Valle de Uco. Supuesto: verificar con DGI.
+	|
+
+Cauces sin contactar=
+	INTEG(-Apertura de cauces, Cauces en la zona)
+	~	cauce
+	~	
+	|
+
+Cauces aliados=
+	INTEG(Apertura de cauces, 0)
+	~	cauce
+	~	Cauces cuyo inspector acepta difundir los reportes.
+	|
+
+Probabilidad de acuerdo base=
+	0.25
+	~	cauce/reunión
+	~	Chance de que una reunión termine en acuerdo, sin casos para mostrar.
+	|
+
+Mejora por caso de éxito=
+	0.5
+	~	1/caso
+	~	Cuánto sube la chance de acuerdo por cada caso publicado.
+	|
+
+Efecto de los casos=
+	MIN(3, 1 + Casos de éxito publicados * Mejora por caso de éxito)
+	~	Dmnl
+	~	
+	|
+
+Apertura de cauces=
+	MIN(Cauces sin contactar / TIME STEP, Reuniones con inspectores por semana * Probabilidad de acuerdo base * Efecto de los casos * Reputación / Reputación inicial)
+	~	cauce/Week
+	~	
+	|
+
+Regantes por cauce=
+	120
+	~	regante/cauce
+	~	Supuesto: verificar padrón de un cauce real.
+	|
+
+Fracción con vid=
+	0.6
+	~	Dmnl
+	~	Parte de los regantes del cauce con viñedo.
+	|
+
+Mercado alcanzado=
+	Cauces aliados * Regantes por cauce * Fracción con vid
+	~	regante
+	~	
+	|
+
+Ventana estacional=
+	WITH LOOKUP(Time, ([(0,0)-(78,1)],(0,0.5),(4,1),(17,1),(22,0.5),(26,0.1),(48,0.1),(52,0.5),(56,1),(69,1),(74,0.5),(78,0.3)))
+	~	Dmnl
+	~	El 'atardecer': 1 en dic–feb (calor, envero), 0,1 en invierno. Semana 0 = 1 nov 2026.
+	|
+
+Regantes sin conocer=
+	INTEG(Incorporación de regantes - Difusión directa - Boca a boca, 0)
+	~	regante
+	~	
+	|
+
+Incorporación de regantes=
+	Apertura de cauces * Regantes por cauce * Fracción con vid
+	~	regante/Week
+	~	
+	|
+
+Tasa de difusión del inspector=
+	0.08
+	~	1/Week
+	~	Fracción de regantes del cauce que el inspector informa por semana en temporada.
+	|
+
+Tasa de contacto en frío=
+	0.25
+	~	1/Week
+	~	En frío llegamos más rápido a todos, pero sin confianza.
+	|
+
+Difusión directa=
+	Regantes sin conocer * Ventana estacional * IF THEN ELSE(Modo de contacto = 1, Tasa de contacto en frío, Tasa de difusión del inspector)
+	~	regante/Week
+	~	
+	|
+
+Fuerza del boca a boca=
+	0.3
+	~	1/Week
+	~	Contactos entre vecinos de turno × probabilidad de que uno convenza al otro.
+	|
+
+Peso del boca a boca negativo=
+	1.5
+	~	Dmnl
+	~	Un desencantado habla más que un contento.
+	|
+
+Fracción convencida neta=
+	MAX(0, XIDZ(Suscriptos - Peso del boca a boca negativo * Abandonaron, Mercado alcanzado, 0))
+	~	Dmnl
+	~	
+	|
+
+Boca a boca=
+	Regantes sin conocer * Fuerza del boca a boca * Fracción convencida neta * Ventana estacional
+	~	regante/Week
+	~	El vector: cada suscripto muestra el mapa al vecino.
+	|
+
+Conocen sin pedir=
+	INTEG(Difusión directa + Boca a boca + Vuelven a evaluar - Pedidos de reporte, 0)
+	~	regante
+	~	
+	|
+
+Fracción que pide por inspector=
+	0.12
+	~	1/Week
+	~	Recomendado por el inspector, el regante pide su reporte.
+	|
+
+Fracción que pide en frío=
+	0.04
+	~	1/Week
+	~	Mensaje de un desconocido: pocos lo piden.
+	|
+
+Pedidos deseados=
+	Conocen sin pedir * Ventana estacional * Reputación * IF THEN ELSE(Modo de contacto = 1, Fracción que pide en frío, Fracción que pide por inspector)
+	~	regante/Week
+	~	
+	|
+
+Pedidos de reporte=
+	MIN(Pedidos deseados, Capacidad de reportes por semana)
+	~	regante/Week
+	~	La 'picadura': reporte gratis de 1 página.
+	|
+
+Con reporte=
+	INTEG(Pedidos de reporte - Altas - Vuelven a evaluar - Descartes, 0)
+	~	regante
+	~	Picados: recibieron el reporte y lo están evaluando.
+	|
+
+Tiempo de evaluación=
+	2
+	~	Week
+	~	
+	|
+
+Probabilidad base de roncha=
+	0.45
+	~	Dmnl
+	~	Chance de que el reporte muestre algo que el productor no sabía y quiera seguir.
+	|
+
+Reputación inicial=
+	0.7
+	~	Dmnl
+	~	
+	|
+
+Probabilidad de roncha=
+	MIN(1, Probabilidad base de roncha * (0.3 + 0.7 * Ventana estacional) * Reputación / Reputación inicial)
+	~	Dmnl
+	~	Fuera de temporada el reporte muestra poco.
+	|
+
+Altas=
+	Con reporte * Probabilidad de roncha / Tiempo de evaluación
+	~	regante/Week
+	~	
+	|
+
+Fracción que reintenta=
+	0.5
+	~	Dmnl
+	~	De los no convencidos, cuántos podrían volver a pedir más adelante.
+	|
+
+Vuelven a evaluar=
+	Con reporte * (1 - Probabilidad de roncha) * Fracción que reintenta / Tiempo de evaluación
+	~	regante/Week
+	~	
+	|
+
+Descartes=
+	Con reporte * (1 - Probabilidad de roncha) * (1 - Fracción que reintenta) / Tiempo de evaluación
+	~	regante/Week
+	~	
+	|
+
+Descartaron=
+	INTEG(Descartes, 0)
+	~	regante
+	~	
+	|
+
+Suscriptos=
+	INTEG(Altas - Abandonos, 0)
+	~	regante
+	~	Reciben alertas cada 5 días en el panel.
+	|
+
+Abandonaron=
+	INTEG(Abandonos, 0)
+	~	regante
+	~	
+	|
+
+Abandono base=
+	0.005
+	~	1/Week
+	~	
+	|
+
+Alertas por semana=
+	Ventana estacional * IF THEN ELSE(Política de alertas = 1, 1.4, 0.25)
+	~	alerta/Week
+	~	Por suscriptor. Cada imagen = 1,4/semana; solo cambios ≈ 0,25.
+	|
+
+Tolerancia a alertas=
+	0.5
+	~	alerta/Week
+	~	
+	|
+
+Sensibilidad al zumbido=
+	0.05
+	~	1/alerta
+	~	
+	|
+
+Probabilidad de abandono por falsa alarma=
+	0.08
+	~	1/alerta
+	~	
+	|
+
+Tasa de abandono=
+	Abandono base + MAX(0, Alertas por semana - Tolerancia a alertas) * Sensibilidad al zumbido + Alertas por semana * Fracción de falsas alarmas * Probabilidad de abandono por falsa alarma
+	~	1/Week
+	~	
+	|
+
+Abandonos=
+	Suscriptos * Tasa de abandono
+	~	regante/Week
+	~	Nos aplastaron.
+	|
+
+Reputación=
+	INTEG(Cambio de reputación, Reputación inicial)
+	~	Dmnl
+	~	Confianza en SatellAgro dentro de los cauces (0–1).
+	|
+
+Cambio de reputación=
+	(Reputación objetivo - Reputación) / Tiempo de formación de reputación
+	~	1/Week
+	~	
+	|
+
+Tiempo de formación de reputación=
+	6
+	~	Week
+	~	
+	|
+
+Aporte de los casos=
+	MIN(0.3, Casos de éxito publicados * 0.05)
+	~	Dmnl
+	~	
+	|
+
+Peso de las falsas alarmas=
+	0.8
+	~	Dmnl
+	~	
+	|
+
+Penalización por falsas alarmas=
+	Peso de las falsas alarmas * Fracción de falsas alarmas * MIN(1, Suscriptos / 10)
+	~	Dmnl
+	~	Se nota cuando hay usuarios expuestos.
+	|
+
+Penalización por contacto en frío=
+	0.25 * Modo de contacto
+	~	Dmnl
+	~	
+	|
+
+Penalización por abandonos=
+	0.5 * XIDZ(Abandonaron, Mercado alcanzado, 0)
+	~	Dmnl
+	~	
+	|
+
+Reputación objetivo=
+	MAX(0.05, MIN(1, Reputación inicial + Aporte de los casos - Penalización por falsas alarmas - Penalización por contacto en frío - Penalización por abandonos))
+	~	Dmnl
+	~	
+	|
+
+Fracción documentable=
+	0.1
+	~	caso/regante
+	~	Suscriptos que al cierre aceptan ser caso con números.
+	|
+
+Cierre de temporada=
+	PULSE(22, 1) + PULSE(74, 1)
+	~	Dmnl
+	~	Fin de marzo de cada temporada.
+	|
+
+Nuevos casos=
+	Suscriptos * Fracción documentable * (1 - Fracción de falsas alarmas) * Cierre de temporada / Duración del cierre
+	~	caso/Week
+	~	
+	|
+
+Duración del cierre=
+	1
+	~	Week
+	~	
+	|
+
+Casos de éxito publicados=
+	INTEG(Nuevos casos, 0)
+	~	caso
+	~	
+	|
+
+Precio por temporada=
+	150
+	~	USD/regante
+	~	Supuesto de precio por productor y temporada.
+	|
+
+Semanas de temporada=
+	26
+	~	Week
+	~	
+	|
+
+Ingresos semanales=
+	IF THEN ELSE(Time >= Semana de inicio de cobro, Suscriptos * Precio por temporada / Semanas de temporada, 0)
+	~	USD/Week
+	~	
+	|
+
+Costo por reporte=
+	15
+	~	USD/regante
+	~	Tiempo de explicar el reporte (visita o llamada).
+	|
+
+Costo por reunión=
+	40
+	~	USD/reunión
+	~	Viaje y tiempo.
+	|
+
+Costo fijo semanal=
+	50
+	~	USD/Week
+	~	Servicios y mantenimiento (supuesto).
+	|
+
+Costos semanales=
+	Pedidos de reporte * Costo por reporte + Reuniones con inspectores por semana * Costo por reunión + Costo fijo semanal
+	~	USD/Week
+	~	
+	|
+
+Ingresos acumulados=
+	INTEG(Ingresos semanales, 0)
+	~	USD
+	~	
+	|
+
+Costos acumulados=
+	INTEG(Costos semanales, 0)
+	~	USD
+	~	
+	|
+
+Resultado acumulado=
+	Ingresos acumulados - Costos acumulados
+	~	USD
+	~	
+	|
+
+Altas acumuladas=
+	INTEG(Altas registradas, 0)
+	~	regante
+	~	
+	|
+
+Altas registradas=
+	Altas
+	~	regante/Week
+	~	
+	|
+
+Costo por alta=
+	XIDZ(Costos acumulados, Altas acumuladas, 0)
+	~	USD/regante
+	~	
+	|
+
+Retención=
+	XIDZ(Suscriptos, Altas acumuladas, 0)
+	~	Dmnl
+	~	
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Dos temporadas de vid en Mendoza: semana 0 = 1 nov 2026, semana 78 = fin de abril 2028.
+	|
+
+FINAL TIME  = 78
+	~	Week
+	~	Fin de la segunda temporada.
+	|
+
+INITIAL TIME  = 0
+	~	Week
+	~	1 de noviembre de 2026.
+	|
+
+SAVEPER  = 1
+	~	Week [0,?]
+	~	Frecuencia de guardado.
+	|
+
+TIME STEP  = 0.25
+	~	Week [0,?]
+	~	Paso de integración.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*1 Cauces y palancas
+$192-192-192,0,Arial|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,Cauces sin contactar,260,200,46,24,3,3,0,0,0,0,0,0
+10,2,Cauces aliados,640,200,46,24,3,3,0,0,0,0,0,0
+11,3,48,450,200,6,8,34,3,0,0,1,0,0,0
+10,4,Apertura de cauces,450,228,44,16,40,3,0,0,-1,0,0,0
+1,5,3,2,4,0,0,22,0,0,0,-1--1--1,,1|(594,200)|
+1,6,3,1,100,0,0,22,0,0,0,-1--1--1,,1|(306,200)|
+10,7,Cauces en la zona,260,90,44,16,8,3,0,0,-1,0,0,0
+10,8,Reuniones con inspectores por semana,330,360,60,16,8,3,0,0,-1,0,0,0
+10,9,Probabilidad de acuerdo base,500,380,44,16,8,3,0,0,-1,0,0,0
+10,10,Efecto de los casos,620,330,44,16,8,3,0,0,-1,0,0,0
+10,11,Mejora por caso de éxito,780,400,44,16,8,3,0,0,-1,0,0,0
+10,12,Regantes por cauce,820,120,44,16,8,3,0,0,-1,0,0,0
+10,13,Fracción con vid,820,280,44,16,8,3,0,0,-1,0,0,0
+10,14,Mercado alcanzado,960,200,44,16,8,3,0,0,-1,0,0,0
+10,15,Modo de contacto,150,540,60,16,8,3,0,0,-1,0,0,0
+10,16,Política de alertas,350,540,60,16,8,3,0,0,-1,0,0,0
+10,17,Fracción de falsas alarmas,550,540,60,16,8,3,0,0,-1,0,0,0
+10,18,Capacidad de reportes por semana,750,540,60,16,8,3,0,0,-1,0,0,0
+10,19,Semana de inicio de cobro,950,540,60,16,8,3,0,0,-1,0,0,0
+1,20,7,1,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,21,8,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,22,9,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,23,1,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,24,10,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,25,Reputación inicial,600,470,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,26,25,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,27,Reputación,450,470,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,28,27,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,29,TIME STEP,450,90,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,30,29,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,31,Casos de éxito publicados,780,470,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,32,31,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,33,11,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,34,12,14,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,35,13,14,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,36,2,14,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,37,Reuniones iniciales,150,430,44,16,8,3,0,0,-1,0,0,0
+10,38,Aumento de reuniones,330,440,44,16,8,3,0,0,-1,0,0,0
+10,39,Semana del aumento,200,300,44,16,8,3,0,0,-1,0,0,0
+1,40,37,8,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,41,38,8,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,42,39,8,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,43,Falsas alarmas iniciales,470,620,50,16,8,3,0,0,-1,0,0,0
+10,44,Mejora por calibración,620,620,50,16,8,3,0,0,-1,0,0,0
+10,45,Semana de calibración,770,620,50,16,8,3,0,0,-1,0,0,0
+1,46,43,17,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,47,44,17,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,48,45,17,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*2 Embudo de regantes
+$192-192-192,0,Arial|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,Regantes sin conocer,200,200,46,24,3,3,0,0,0,0,0,0
+12,2,48,200,20,10,8,0,3,0,0,-1,0,0,0
+11,3,48,200,80,8,6,33,3,0,0,4,0,0,0
+10,4,Incorporación de regantes,252,80,44,16,40,3,0,0,-1,0,0,0
+1,5,3,1,4,0,0,22,0,0,0,-1--1--1,,1|(200,176)|
+1,6,3,2,100,0,0,22,0,0,0,-1--1--1,,1|(200,20)|
+10,7,Conocen sin pedir,520,200,46,24,3,3,0,0,0,0,0,0
+11,8,48,360,160,6,8,34,3,0,0,1,0,0,0
+10,9,Difusión directa,360,188,44,16,40,3,0,0,-1,0,0,0
+1,10,8,7,4,0,0,22,0,0,0,-1--1--1,,1|(474,160)|
+1,11,8,1,100,0,0,22,0,0,0,-1--1--1,,1|(246,160)|
+10,12,Con reporte,860,200,46,24,3,3,0,0,0,0,0,0
+11,13,48,690,200,6,8,34,3,0,0,1,0,0,0
+10,14,Pedidos de reporte,690,228,44,16,40,3,0,0,-1,0,0,0
+1,15,13,12,4,0,0,22,0,0,0,-1--1--1,,1|(814,200)|
+1,16,13,7,100,0,0,22,0,0,0,-1--1--1,,1|(566,200)|
+10,17,Suscriptos,1200,200,46,24,3,3,0,0,0,0,0,0
+11,18,48,1030,200,6,8,34,3,0,0,1,0,0,0
+10,19,Altas,1030,228,44,16,40,3,0,0,-1,0,0,0
+1,20,18,17,4,0,0,22,0,0,0,-1--1--1,,1|(1154,200)|
+1,21,18,12,100,0,0,22,0,0,0,-1--1--1,,1|(906,200)|
+10,22,Abandonaron,1200,470,46,24,3,3,0,0,0,0,0,0
+11,23,48,1200,335,8,6,33,3,0,0,4,0,0,0
+10,24,Abandonos,1252,335,44,16,40,3,0,0,-1,0,0,0
+1,25,23,22,4,0,0,22,0,0,0,-1--1--1,,1|(1200,446)|
+1,26,23,17,100,0,0,22,0,0,0,-1--1--1,,1|(1200,224)|
+10,27,Descartaron,860,470,46,24,3,3,0,0,0,0,0,0
+11,28,48,860,335,8,6,33,3,0,0,4,0,0,0
+10,29,Descartes,912,335,44,16,40,3,0,0,-1,0,0,0
+1,30,28,27,4,0,0,22,0,0,0,-1--1--1,,1|(860,446)|
+1,31,28,12,100,0,0,22,0,0,0,-1--1--1,,1|(860,224)|
+10,32,Vuelven a evaluar,690,90,44,16,8,3,0,0,-1,0,0,0
+10,33,Boca a boca,360,280,44,16,8,3,0,0,-1,0,0,0
+10,34,Ventana estacional,520,40,44,16,8,3,0,0,-1,0,0,0
+10,35,Tasa de difusión del inspector,260,380,44,16,8,3,0,0,-1,0,0,0
+10,36,Tasa de contacto en frío,420,380,44,16,8,3,0,0,-1,0,0,0
+10,37,Fuerza del boca a boca,120,330,44,16,8,3,0,0,-1,0,0,0
+10,38,Fracción convencida neta,360,470,44,16,8,3,0,0,-1,0,0,0
+10,39,Peso del boca a boca negativo,520,540,44,16,8,3,0,0,-1,0,0,0
+10,40,Fracción que pide por inspector,560,320,44,16,8,3,0,0,-1,0,0,0
+10,41,Fracción que pide en frío,700,380,44,16,8,3,0,0,-1,0,0,0
+10,42,Pedidos deseados,700,290,44,16,8,3,0,0,-1,0,0,0
+10,43,Tiempo de evaluación,960,90,44,16,8,3,0,0,-1,0,0,0
+10,44,Probabilidad de roncha,1030,300,44,16,8,3,0,0,-1,0,0,0
+10,45,Probabilidad base de roncha,1060,390,44,16,8,3,0,0,-1,0,0,0
+10,46,Reputación inicial,1300,390,44,16,8,3,0,0,-1,0,0,0
+10,47,Fracción que reintenta,760,540,44,16,8,3,0,0,-1,0,0,0
+10,48,Tasa de abandono,1360,335,44,16,8,3,0,0,-1,0,0,0
+10,49,Abandono base,1500,250,44,16,8,3,0,0,-1,0,0,0
+10,50,Alertas por semana,1360,470,44,16,8,3,0,0,-1,0,0,0
+10,51,Tolerancia a alertas,1500,400,44,16,8,3,0,0,-1,0,0,0
+10,52,Sensibilidad al zumbido,1500,330,44,16,8,3,0,0,-1,0,0,0
+10,53,Probabilidad de abandono por falsa alarma,1500,540,60,16,8,3,0,0,-1,0,0,0
+10,54,Apertura de cauces,90,40,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,55,54,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,56,Regantes por cauce,60,120,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,57,56,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,58,Fracción con vid,320,60,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,59,58,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,60,35,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,61,36,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,62,1,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,63,34,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,64,Modo de contacto,360,40,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,65,64,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,66,Capacidad de reportes por semana,600,450,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,67,66,14,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,68,42,14,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,69,44,19,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,70,43,19,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,71,12,19,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,72,48,24,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,73,17,24,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,74,44,29,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,75,47,29,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,76,43,29,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,77,12,29,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,78,44,32,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,79,47,32,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,80,43,32,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,81,12,32,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,82,38,33,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,83,37,33,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,84,1,33,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,85,34,33,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,86,Time,640,20,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,87,86,34,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,88,39,38,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,89,Mercado alcanzado,200,560,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,90,89,38,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,91,22,38,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,92,17,38,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,93,40,42,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,94,41,42,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,95,34,42,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,96,7,42,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,97,64,42,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,98,Reputación,880,40,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,99,98,42,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,100,45,44,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,101,34,44,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,102,46,44,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,103,98,44,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,104,53,48,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,105,Fracción de falsas alarmas,1500,470,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,106,105,48,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,107,52,48,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,108,51,48,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,109,50,48,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,110,49,48,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,111,Política de alertas,1360,560,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,112,111,50,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,113,34,50,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*3 Reputación y casos
+$192-192-192,0,Arial|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,Reputación,420,200,46,24,3,3,0,0,0,0,0,0
+12,2,48,100,200,10,8,0,3,0,0,-1,0,0,0
+11,3,48,250,200,6,8,34,3,0,0,1,0,0,0
+10,4,Cambio de reputación,250,228,44,16,40,3,0,0,-1,0,0,0
+1,5,3,1,4,0,0,22,0,0,0,-1--1--1,,1|(374,200)|
+1,6,3,2,100,0,0,22,0,0,0,-1--1--1,,1|(100,200)|
+10,7,Reputación inicial,420,70,44,16,8,3,0,0,-1,0,0,0
+10,8,Tiempo de formación de reputación,620,110,60,16,8,3,0,0,-1,0,0,0
+10,9,Reputación objetivo,620,260,44,16,8,3,0,0,-1,0,0,0
+10,10,Aporte de los casos,820,160,44,16,8,3,0,0,-1,0,0,0
+10,11,Penalización por falsas alarmas,820,260,60,16,8,3,0,0,-1,0,0,0
+10,12,Peso de las falsas alarmas,1000,230,44,16,8,3,0,0,-1,0,0,0
+10,13,Penalización por contacto en frío,820,350,60,16,8,3,0,0,-1,0,0,0
+10,14,Penalización por abandonos,820,440,44,16,8,3,0,0,-1,0,0,0
+10,15,Casos de éxito publicados,560,560,46,24,3,3,0,0,0,0,0,0
+12,16,48,250,560,10,8,0,3,0,0,-1,0,0,0
+11,17,48,390,560,6,8,34,3,0,0,1,0,0,0
+10,18,Nuevos casos,390,588,44,16,40,3,0,0,-1,0,0,0
+1,19,17,15,4,0,0,22,0,0,0,-1--1--1,,1|(514,560)|
+1,20,17,16,100,0,0,22,0,0,0,-1--1--1,,1|(250,560)|
+10,21,Fracción documentable,250,460,44,16,8,3,0,0,-1,0,0,0
+10,22,Cierre de temporada,390,660,44,16,8,3,0,0,-1,0,0,0
+10,23,Duración del cierre,250,660,44,16,8,3,0,0,-1,0,0,0
+1,24,7,1,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,25,8,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,26,9,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,27,1,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,28,13,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,29,11,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,30,14,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,31,10,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,32,7,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,33,15,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,34,Fracción de falsas alarmas,1000,320,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,35,34,11,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,36,12,11,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,37,Suscriptos,1000,160,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,38,37,11,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,39,Modo de contacto,1000,400,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,40,39,13,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,41,Mercado alcanzado,1000,540,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,42,41,14,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,43,Abandonaron,1000,470,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,44,43,14,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,45,34,18,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,46,21,18,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,47,22,18,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,48,23,18,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,49,37,18,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*4 Economía y resultados
+$192-192-192,0,Arial|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,Ingresos acumulados,460,120,46,24,3,3,0,0,0,0,0,0
+12,2,48,130,120,10,8,0,3,0,0,-1,0,0,0
+11,3,48,280,120,6,8,34,3,0,0,1,0,0,0
+10,4,Ingresos semanales,280,148,44,16,40,3,0,0,-1,0,0,0
+1,5,3,1,4,0,0,22,0,0,0,-1--1--1,,1|(414,120)|
+1,6,3,2,100,0,0,22,0,0,0,-1--1--1,,1|(130,120)|
+10,7,Costos acumulados,460,320,46,24,3,3,0,0,0,0,0,0
+12,8,48,130,320,10,8,0,3,0,0,-1,0,0,0
+11,9,48,280,320,6,8,34,3,0,0,1,0,0,0
+10,10,Costos semanales,280,348,44,16,40,3,0,0,-1,0,0,0
+1,11,9,7,4,0,0,22,0,0,0,-1--1--1,,1|(414,320)|
+1,12,9,8,100,0,0,22,0,0,0,-1--1--1,,1|(130,320)|
+10,13,Altas acumuladas,460,520,46,24,3,3,0,0,0,0,0,0
+12,14,48,130,520,10,8,0,3,0,0,-1,0,0,0
+11,15,48,280,520,6,8,34,3,0,0,1,0,0,0
+10,16,Altas registradas,280,548,44,16,40,3,0,0,-1,0,0,0
+1,17,15,13,4,0,0,22,0,0,0,-1--1--1,,1|(414,520)|
+1,18,15,14,100,0,0,22,0,0,0,-1--1--1,,1|(130,520)|
+10,19,Precio por temporada,160,30,44,16,8,3,0,0,-1,0,0,0
+10,20,Semanas de temporada,340,30,44,16,8,3,0,0,-1,0,0,0
+10,21,Costo por reporte,60,330,44,16,8,3,0,0,-1,0,0,0
+10,22,Costo por reunión,260,440,44,16,8,3,0,0,-1,0,0,0
+10,23,Costo fijo semanal,400,420,44,16,8,3,0,0,-1,0,0,0
+10,24,Resultado acumulado,680,220,44,16,8,3,0,0,-1,0,0,0
+10,25,Costo por alta,680,420,44,16,8,3,0,0,-1,0,0,0
+10,26,Retención,680,560,44,16,8,3,0,0,-1,0,0,0
+10,27,Semana de inicio de cobro,680,60,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,28,27,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,29,19,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,30,20,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,31,Suscriptos,130,200,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,32,31,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,33,Time,520,30,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,34,33,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,35,Reuniones con inspectores por semana,130,400,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,36,35,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,37,Pedidos de reporte,60,250,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,38,37,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,39,23,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,40,21,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,41,22,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,42,Altas,280,620,44,16,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
+1,43,42,16,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,44,1,24,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,45,7,24,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,46,7,25,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,47,13,25,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,48,13,26,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,49,31,26,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+///---\\\
